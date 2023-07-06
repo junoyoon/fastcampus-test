@@ -23,6 +23,7 @@ import org.springframework.samples.petclinic.mapper.VisitMapper
 import org.springframework.samples.petclinic.model.Visit
 import org.springframework.samples.petclinic.rest.api.VisitsApi
 import org.springframework.samples.petclinic.rest.dto.VisitDto
+import org.springframework.samples.petclinic.rest.dto.VisitFieldsDto
 import org.springframework.samples.petclinic.service.ClinicService
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.CrossOrigin
@@ -69,10 +70,10 @@ class VisitRestController(
     }
 
     @PreAuthorize("hasRole(@roles.OWNER_ADMIN)")
-    override fun updateVisit(visitId: Int, visitDto: VisitDto): ResponseEntity<VisitDto> {
+    override fun updateVisit(visitId: Int, visitFieldsDto: VisitFieldsDto): ResponseEntity<VisitDto> {
         val currentVisit: Visit = clinicService.findVisitById(visitId)?.apply {
-            this.date = visitDto.date ?: LocalDate.now()
-            this.description = visitDto.description
+            this.date = visitFieldsDto.date ?: LocalDate.now()
+            this.description = visitFieldsDto.description
         } ?: return ResponseEntity(HttpStatus.NOT_FOUND)
 
         clinicService.saveVisit(currentVisit)

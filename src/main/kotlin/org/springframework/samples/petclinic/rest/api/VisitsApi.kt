@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.samples.petclinic.rest.dto.RestErrorDto
 import org.springframework.samples.petclinic.rest.dto.VisitDto
+import org.springframework.samples.petclinic.rest.dto.VisitFieldsDto
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 
@@ -216,7 +217,7 @@ interface VisitsApi {
             description = "The ID of the visit.",
             required = true
         ) @PathVariable("visitId") visitId: Int,
-        @Parameter(description = "The visit", required = true) @Valid @RequestBody visitDto: VisitDto
+        @Parameter(description = "The visit", required = true) @Valid @RequestBody visitFieldsDto: VisitFieldsDto
     ): ResponseEntity<VisitDto> {
         return ResponseEntity(HttpStatus.NOT_IMPLEMENTED)
     }

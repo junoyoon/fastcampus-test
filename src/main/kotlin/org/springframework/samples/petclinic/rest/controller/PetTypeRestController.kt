@@ -21,7 +21,8 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.samples.petclinic.mapper.PetTypeMapper
 import org.springframework.samples.petclinic.model.PetType
-import org.springframework.samples.petclinic.rest.api.PettypesApi
+import org.springframework.samples.petclinic.rest.api.PetTypesApi
+import org.springframework.samples.petclinic.rest.dto.PetFieldsDto
 import org.springframework.samples.petclinic.rest.dto.PetTypeDto
 import org.springframework.samples.petclinic.service.ClinicService
 import org.springframework.security.access.prepost.PreAuthorize
@@ -35,7 +36,7 @@ import org.springframework.web.util.UriComponentsBuilder
 @RequestMapping("api")
 class PetTypeRestController(
     private val clinicService: ClinicService,
-) : PettypesApi {
+) : PetTypesApi {
 
     @PreAuthorize("hasAnyRole(@roles.OWNER_ADMIN, @roles.VET_ADMIN)")
     override fun listPetTypes(): ResponseEntity<List<PetTypeDto>> {
@@ -70,9 +71,9 @@ class PetTypeRestController(
     }
 
     @PreAuthorize("hasRole(@roles.VET_ADMIN)")
-    override fun updatePetType(petTypeId: Int, petTypeDto: PetTypeDto): ResponseEntity<PetTypeDto> {
+    override fun updatePetType(petTypeId: Int, petFieldsDto: PetFieldsDto): ResponseEntity<PetTypeDto> {
         val currentPetType: PetType = clinicService.findPetTypeById(petTypeId)?.apply {
-            this.name = petTypeDto.name
+            this.name = petFieldsDto.name
         } ?: return ResponseEntity(HttpStatus.NOT_FOUND)
 
         clinicService.savePetType(currentPetType)

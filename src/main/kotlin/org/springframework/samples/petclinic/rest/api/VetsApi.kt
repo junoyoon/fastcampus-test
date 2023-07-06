@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.samples.petclinic.rest.dto.RestErrorDto
 import org.springframework.samples.petclinic.rest.dto.VetDto
+import org.springframework.samples.petclinic.rest.dto.VetFieldsDto
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 
@@ -216,7 +217,7 @@ interface VetsApi {
             description = "The ID of the vet.",
             required = true
         ) @PathVariable("vetId") vetId: Int,
-        @Parameter(description = "The vet", required = true) @Valid @RequestBody vetDto: VetDto
+        @Parameter(description = "The vet", required = true) @Valid @RequestBody vetFieldsDto: VetFieldsDto
     ): ResponseEntity<VetDto> {
         return ResponseEntity(HttpStatus.NOT_IMPLEMENTED)
     }

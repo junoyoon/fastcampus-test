@@ -24,6 +24,7 @@ import org.springframework.samples.petclinic.mapper.VetMapper
 import org.springframework.samples.petclinic.model.Vet
 import org.springframework.samples.petclinic.rest.api.VetsApi
 import org.springframework.samples.petclinic.rest.dto.VetDto
+import org.springframework.samples.petclinic.rest.dto.VetFieldsDto
 import org.springframework.samples.petclinic.service.ClinicService
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.CrossOrigin
@@ -68,7 +69,7 @@ class VetRestController(
     }
 
     @PreAuthorize("hasRole(@roles.VET_ADMIN)")
-    override fun updateVet(vetId: Int, vetDto: VetDto): ResponseEntity<VetDto> {
+    override fun updateVet(vetId: Int, vetDto: VetFieldsDto): ResponseEntity<VetDto> {
         val currentVet: Vet = clinicService.findVetById(vetId)?.apply {
             firstName = vetDto.firstName
             lastName = vetDto.lastName

@@ -20,18 +20,18 @@ cd spring-petclinic-rest-kotlin
 ./gradle bootRun
 ```
 
-You can then access petclinic here: [http://localhost:8080/petclinic/](http://localhost:8080/petclinic/)
+You can then access petclinic here: [http://localhost:8080/](http://localhost:8080/)
 
 There are actuator health check and info routes as well: 
-* [http://localhost:8080/petclinic/actuator/health](http://localhost:8080/petclinic/actuator/health)
-* [http://localhost:8080/petclinic/actuator/info](http://localhost:8080/petclinic/actuator/info)
+* [http://localhost:8080/actuator/health](http://localhost:8080/actuator/health)
+* [http://localhost:8080/actuator/info](http://localhost:8080/actuator/info)
 
 ## OpenAPI REST API documentation presented here (after application start):
 
 You can reach the swagger UI with this URL
-[http://localhost:8080/petclinic/](http://localhost:8080/petclinic/swagger-ui.html).
+[http://localhost:8080/](http://localhost:8080/swagger-ui.html).
 
-You then can get the Open API description reaching this URL [localhost:8080/petclinic/v3/api-docs](localhost:8080/petclinic/v3/api-docs).
+You then can get the Open API description reaching this URL [localhost:8080/v3/api-docs](localhost:8080/v3/api-docs).
 
 ## Screenshot of the Angular client
 

@@ -23,6 +23,7 @@ import org.springframework.samples.petclinic.mapper.PetTypeMapper
 import org.springframework.samples.petclinic.model.Pet
 import org.springframework.samples.petclinic.rest.api.PetsApi
 import org.springframework.samples.petclinic.rest.dto.PetDto
+import org.springframework.samples.petclinic.rest.dto.PetFieldsDto
 import org.springframework.samples.petclinic.service.ClinicService
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.CrossOrigin
@@ -55,11 +56,11 @@ class PetRestController(
     }
 
     @PreAuthorize("hasRole(@roles.OWNER_ADMIN)")
-    override fun updatePet(petId: Int, petDto: PetDto): ResponseEntity<PetDto> {
+    override fun updatePet(petId: Int, petFieldsDto: PetFieldsDto): ResponseEntity<PetDto> {
         val currentPet: Pet = clinicService.findPetById(petId)?.apply {
-            birthDate = petDto.birthDate
-            name = petDto.name
-            type = PetTypeMapper.toPetType(petDto.type)
+            birthDate = petFieldsDto.birthDate
+            name = petFieldsDto.name
+            type = PetTypeMapper.toPetType(petFieldsDto.type)
         } ?: return ResponseEntity(HttpStatus.NOT_FOUND)
         clinicService.savePet(currentPet)
         return ResponseEntity(PetMapper.toPetDto(currentPet), HttpStatus.NO_CONTENT)
