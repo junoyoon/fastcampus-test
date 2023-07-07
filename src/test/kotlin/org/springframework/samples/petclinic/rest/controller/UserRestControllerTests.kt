@@ -56,7 +56,6 @@ class UserRestControllerTests(
     fun testCreateUserError() {
         val user = User().apply {
             username = "username"
-            password = "password"
             enabled = true
         }
         val mapper = ObjectMapper()

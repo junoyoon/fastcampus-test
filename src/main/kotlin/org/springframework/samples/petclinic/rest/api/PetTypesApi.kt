@@ -220,7 +220,7 @@ interface PetTypesApi {
         @Parameter(
             description = "The pet type",
             required = true
-        ) @Valid @RequestBody petFieldsDto: PetFieldsDto
+        ) @Valid @RequestBody petTypeDto: PetTypeDto
     ): ResponseEntity<PetTypeDto> {
         return ResponseEntity(HttpStatus.NOT_IMPLEMENTED)
     }

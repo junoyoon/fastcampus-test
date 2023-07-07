@@ -71,9 +71,9 @@ class PetTypeRestController(
     }
 
     @PreAuthorize("hasRole(@roles.VET_ADMIN)")
-    override fun updatePetType(petTypeId: Int, petFieldsDto: PetFieldsDto): ResponseEntity<PetTypeDto> {
+    override fun updatePetType(petTypeId: Int, petTypeDto: PetTypeDto): ResponseEntity<PetTypeDto> {
         val currentPetType: PetType = clinicService.findPetTypeById(petTypeId)?.apply {
-            this.name = petFieldsDto.name
+            this.name = petTypeDto.name
         } ?: return ResponseEntity(HttpStatus.NOT_FOUND)
 
         clinicService.savePetType(currentPetType)
