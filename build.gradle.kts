@@ -53,6 +53,11 @@ dependencies {
     implementation("org.glassfish.jaxb:jaxb-runtime")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
 
+    testImplementation("io.kotest:kotest-runner-junit5:5.6.2")
+    testImplementation("io.kotest:kotest-assertions-core-jvm:5.6.2")
+    testImplementation("io.kotest:kotest-property:5.6.2")
+    testImplementation("io.kotest:kotest-framework-datatest-jvm:5.6.2")
+    testImplementation("io.kotest.extensions:kotest-extensions-spring:1.1.3")
     testImplementation("org.mockito.kotlin:mockito-kotlin:5.0.0")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.boot:spring-boot-starter-webflux")

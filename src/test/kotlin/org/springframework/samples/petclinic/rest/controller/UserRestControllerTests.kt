@@ -5,20 +5,15 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
-import org.springframework.samples.petclinic.ApplicationTestConfig
 import org.springframework.samples.petclinic.mapper.UserMapper
 import org.springframework.samples.petclinic.model.User
 import org.springframework.samples.petclinic.rest.advice.ExceptionControllerAdvice
 import org.springframework.security.test.context.support.WithMockUser
-import org.springframework.test.context.ContextConfiguration
-import org.springframework.test.context.web.WebAppConfiguration
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 
 @SpringBootTest
-@ContextConfiguration(classes = [ApplicationTestConfig::class])
-@WebAppConfiguration
 class UserRestControllerTests(
     @Autowired userRestController: UserRestController,
 ) {

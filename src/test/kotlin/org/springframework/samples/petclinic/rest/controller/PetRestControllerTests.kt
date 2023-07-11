@@ -26,15 +26,12 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType
-import org.springframework.samples.petclinic.ApplicationTestConfig
 import org.springframework.samples.petclinic.mapper.PetMapper
 import org.springframework.samples.petclinic.rest.advice.ExceptionControllerAdvice
 import org.springframework.samples.petclinic.rest.dto.PetDto
 import org.springframework.samples.petclinic.rest.dto.PetTypeDto
 import org.springframework.samples.petclinic.service.ClinicService
 import org.springframework.security.test.context.support.WithMockUser
-import org.springframework.test.context.ContextConfiguration
-import org.springframework.test.context.web.WebAppConfiguration
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
@@ -47,8 +44,6 @@ import java.time.LocalDate
  * @author Vitaliy Fedoriv
  */
 @SpringBootTest
-@ContextConfiguration(classes = [ApplicationTestConfig::class])
-@WebAppConfiguration
 class PetRestControllerTests(
     @Autowired petRestController: PetRestController,
     @Autowired @MockBean val clinicService: ClinicService
