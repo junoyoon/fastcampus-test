@@ -25,12 +25,14 @@ import jakarta.validation.constraints.NotEmpty
  * @author Ken Krebs
  */
 @MappedSuperclass
-open class Person : BaseEntity() {
+open class Person(
+    id: Int? = null,
+
     @Column(name = "first_name")
-    @NotEmpty
-    var firstName: String? = ""
+    @field:NotEmpty
+    var firstName: String? = "",
 
     @Column(name = "last_name")
-    @NotEmpty
+    @field:NotEmpty
     var lastName: String? = ""
-}
+) : BaseEntity(id)

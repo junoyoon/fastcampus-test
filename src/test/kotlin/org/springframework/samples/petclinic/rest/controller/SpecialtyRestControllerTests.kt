@@ -16,18 +16,17 @@
 package org.springframework.samples.petclinic.rest.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.mockito.BDDMockito
+import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType
+import org.springframework.samples.petclinic.ApplicationTestConfig
 import org.springframework.samples.petclinic.mapper.SpecialtyMapper
 import org.springframework.samples.petclinic.model.Specialty
 import org.springframework.samples.petclinic.rest.advice.ExceptionControllerAdvice
 import org.springframework.samples.petclinic.service.ClinicService
-import org.springframework.samples.petclinic.ApplicationTestConfig
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.web.WebAppConfiguration
@@ -45,26 +44,22 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders
 @WebAppConfiguration
 class SpecialtyRestControllerTests(
     @Autowired specialtyRestController: SpecialtyRestController,
+    @Autowired @MockBean val clinicService: ClinicService
 ) {
-    @MockBean
-    lateinit var clinicService: ClinicService
-    
     private val mockMvc = MockMvcBuilders.standaloneSetup(specialtyRestController)
         .setControllerAdvice(ExceptionControllerAdvice())
         .build()
-    private val specialties = mutableListOf<Specialty>()
 
-    @BeforeEach
-    fun initSpecialtys() {
-        specialties.add(Specialty().apply { id = 1; name = "radiology" })
-        specialties.add(Specialty().apply { id = 2; name = "surgery" })
-        specialties.add(Specialty().apply { id = 3; name = "dentistry" })
-    }
+    private val specialties = listOf(
+        Specialty( id = 1, name = "radiology" ),
+        Specialty( id = 2, name = "surgery" ),
+        Specialty( id = 3, name = "dentistry" ),
+    )
 
     @Test
     @WithMockUser(roles = ["VET_ADMIN"])
     fun testGetSpecialtySuccess() {
-        BDDMockito.given(clinicService.findSpecialtyById(1)).willReturn(specialties[0])
+        whenever(clinicService.findSpecialtyById(1)).thenReturn(specialties[0])
         mockMvc.perform(
             MockMvcRequestBuilders.get("/api/specialties/1")
                 .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -78,7 +73,7 @@ class SpecialtyRestControllerTests(
     @Test
     @WithMockUser(roles = ["VET_ADMIN"])
     fun testGetSpecialtyNotFound() {
-        BDDMockito.given(clinicService.findSpecialtyById(999)).willReturn(null)
+        whenever(clinicService.findSpecialtyById(999)).thenReturn(null)
         mockMvc.perform(
             MockMvcRequestBuilders.get("/api/specialties/999")
                 .accept(MediaType.APPLICATION_JSON)
@@ -88,9 +83,8 @@ class SpecialtyRestControllerTests(
 
     @Test
     @WithMockUser(roles = ["VET_ADMIN"])
-    fun testGetAllSpecialtysSuccess() {
-        specialties.removeAt(0)
-        BDDMockito.given(clinicService.findAllSpecialties()).willReturn(specialties)
+    fun testGetAllSpecialtiesSuccess() {
+        whenever(clinicService.findAllSpecialties()).thenReturn(specialties.drop(1))
         mockMvc.perform(
             MockMvcRequestBuilders.get("/api/specialties/")
                 .accept(MediaType.APPLICATION_JSON)
@@ -105,9 +99,8 @@ class SpecialtyRestControllerTests(
 
     @Test
     @WithMockUser(roles = ["VET_ADMIN"])
-    fun testGetAllSpecialtysNotFound() {
-        specialties.clear()
-        BDDMockito.given(clinicService.findAllSpecialties()).willReturn(specialties)
+    fun testGetAllSpecialtiesNotFound() {
+        whenever(clinicService.findAllSpecialties()).thenReturn(emptyList())
         mockMvc.perform(
             MockMvcRequestBuilders.get("/api/specialties/")
                 .accept(MediaType.APPLICATION_JSON)
@@ -118,7 +111,7 @@ class SpecialtyRestControllerTests(
     @Test
     @WithMockUser(roles = ["VET_ADMIN"])
     fun testCreateSpecialtySuccess() {
-        val newSpecialty = specialties[0].apply { id = 999 }
+        val newSpecialty = Specialty( id = 999, name = specialties[0].name )
         val mapper = ObjectMapper()
         val newSpecialtyAsJSON = mapper.writeValueAsString(SpecialtyMapper.toSpecialtyDto(newSpecialty))
         mockMvc.perform(
@@ -131,9 +124,8 @@ class SpecialtyRestControllerTests(
 
     @Test
     @WithMockUser(roles = ["VET_ADMIN"])
-    @Throws(Exception::class)
     fun testCreateSpecialtyError() {
-        val newSpecialty = specialties[0].apply { id = null; name = null }
+        val newSpecialty = Specialty( id = null, name = null )
         val mapper = ObjectMapper()
         val newSpecialtyAsJSON = mapper.writeValueAsString(SpecialtyMapper.toSpecialtyDto(newSpecialty))
         mockMvc.perform(
@@ -146,9 +138,8 @@ class SpecialtyRestControllerTests(
 
     @Test
     @WithMockUser(roles = ["VET_ADMIN"])
-    @Throws(Exception::class)
     fun testUpdateSpecialtySuccess() {
-        BDDMockito.given(clinicService.findSpecialtyById(2)).willReturn(specialties[1])
+        whenever(clinicService.findSpecialtyById(2)).thenReturn(specialties[1])
         val newSpecialty = specialties[1].apply { name = "surgery I" }
         val mapper = ObjectMapper()
         val newSpecialtyAsJSON = mapper.writeValueAsString(SpecialtyMapper.toSpecialtyDto(newSpecialty))
@@ -172,7 +163,7 @@ class SpecialtyRestControllerTests(
     @Test
     @WithMockUser(roles = ["VET_ADMIN"])
     fun testUpdateSpecialtyError() {
-        val newSpecialty = specialties[0].apply { name = "" }
+        val newSpecialty = Specialty(name =  "", id = 1)
         val mapper = ObjectMapper()
         val newSpecialtyAsJSON = mapper.writeValueAsString(SpecialtyMapper.toSpecialtyDto(newSpecialty))
         mockMvc.perform(
@@ -189,7 +180,7 @@ class SpecialtyRestControllerTests(
         val newSpecialty = specialties[0]
         val mapper = ObjectMapper()
         val newSpecialtyAsJSON = mapper.writeValueAsString(SpecialtyMapper.toSpecialtyDto(newSpecialty))
-        BDDMockito.given(clinicService.findSpecialtyById(1)).willReturn(specialties[0])
+        whenever(clinicService.findSpecialtyById(1)).thenReturn(specialties[0])
         mockMvc.perform(
             MockMvcRequestBuilders.delete("/api/specialties/1")
                 .content(newSpecialtyAsJSON).accept(MediaType.APPLICATION_JSON_VALUE)
@@ -204,7 +195,7 @@ class SpecialtyRestControllerTests(
         val newSpecialty = specialties[0]
         val mapper = ObjectMapper()
         val newSpecialtyAsJSON = mapper.writeValueAsString(SpecialtyMapper.toSpecialtyDto(newSpecialty))
-        BDDMockito.given(clinicService.findSpecialtyById(999)).willReturn(null)
+        whenever(clinicService.findSpecialtyById(999)).thenReturn(null)
         mockMvc.perform(
             MockMvcRequestBuilders.delete("/api/specialties/999")
                 .content(newSpecialtyAsJSON).accept(MediaType.APPLICATION_JSON_VALUE)

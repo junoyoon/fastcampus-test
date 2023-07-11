@@ -20,11 +20,12 @@ import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.mockito.BDDMockito
+import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType
+import org.springframework.samples.petclinic.ApplicationTestConfig
 import org.springframework.samples.petclinic.mapper.VisitMapper
 import org.springframework.samples.petclinic.model.Owner
 import org.springframework.samples.petclinic.model.Pet
@@ -32,7 +33,6 @@ import org.springframework.samples.petclinic.model.PetType
 import org.springframework.samples.petclinic.model.Visit
 import org.springframework.samples.petclinic.rest.advice.ExceptionControllerAdvice
 import org.springframework.samples.petclinic.service.ClinicService
-import org.springframework.samples.petclinic.ApplicationTestConfig
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.web.WebAppConfiguration
@@ -51,10 +51,8 @@ import java.time.LocalDate
 @WebAppConfiguration
 class VisitRestControllerTests(
     @Autowired visitRestController: VisitRestController,
+    @Autowired @MockBean val clinicService: ClinicService
 ) {
-    @MockBean
-    lateinit var clinicService: ClinicService
-
     private val mockMvc = MockMvcBuilders.standaloneSetup(visitRestController)
         .setControllerAdvice(ExceptionControllerAdvice())
         .build()
@@ -62,42 +60,41 @@ class VisitRestControllerTests(
 
     @BeforeEach
     fun initVisits() {
-        val owner = Owner().apply {
-            id = 1
-            firstName = "Eduardo"
-            lastName = "Rodriquez"
-            address = "2693 Commerce St."
-            city = "McFarland"
-            telephone = "6085558763"
-        }
+        val owner = Owner(
+            id = 1,
+            firstName = "Eduardo",
+            lastName = "Rodriquez",
+            address = "2693 Commerce St.",
+            city = "McFarland",
+            telephone = "6085558763",
+        )
 
-        val petType = PetType().apply { id = 2; name = "dof" }
-        val pet = Pet().apply {
-            this.id = 8
-            this.name = "Rosy"
-            this.birthDate = LocalDate.now()
-            this.owner = owner
-            this.type = petType
-        }
+        val pet = Pet(
+            id = 8,
+            name = "Rosy",
+            birthDate = LocalDate.now(),
+            owner = owner,
+            type = PetType(id = 2, name = "dof"),
+        )
 
-        visits.add(Visit().apply {
-            this.id = 2
-            this.pet = pet
-            this.date = LocalDate.now()
-            this.description = "rabies shot"
-        })
-        visits.add(Visit().apply {
-            this.id = 3
-            this.pet = pet
-            this.date = LocalDate.now()
-            this.description = "neutered"
-        })
+        visits.add(Visit(
+            id = 2,
+            pet = pet,
+            date = LocalDate.now(),
+            description = "rabies shot"
+        ))
+        visits.add(Visit(
+            id = 3,
+            pet = pet,
+            date = LocalDate.now(),
+            description = "neutered",
+        ))
     }
 
     @Test
     @WithMockUser(roles = ["OWNER_ADMIN"])
     fun testGetVisitSuccess() {
-        BDDMockito.given(clinicService.findVisitById(2)).willReturn(visits[0])
+        whenever(clinicService.findVisitById(2)).thenReturn(visits[0])
         mockMvc.perform(
             MockMvcRequestBuilders.get("/api/visits/2")
                 .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -111,7 +108,7 @@ class VisitRestControllerTests(
     @Test
     @WithMockUser(roles = ["OWNER_ADMIN"])
     fun testGetVisitNotFound() {
-        BDDMockito.given(clinicService.findVisitById(999)).willReturn(null)
+        whenever(clinicService.findVisitById(999)).thenReturn(null)
         mockMvc.perform(
             MockMvcRequestBuilders.get("/api/visits/999")
                 .accept(MediaType.APPLICATION_JSON)
@@ -122,7 +119,7 @@ class VisitRestControllerTests(
     @Test
     @WithMockUser(roles = ["OWNER_ADMIN"])
     fun testGetAllVisitsSuccess() {
-        BDDMockito.given(clinicService.findAllVisits()).willReturn(visits)
+        whenever(clinicService.findAllVisits()).thenReturn(visits)
         mockMvc.perform(
             MockMvcRequestBuilders.get("/api/visits/")
                 .accept(MediaType.APPLICATION_JSON)
@@ -138,8 +135,7 @@ class VisitRestControllerTests(
     @Test
     @WithMockUser(roles = ["OWNER_ADMIN"])
     fun testGetAllVisitsNotFound() {
-        visits.clear()
-        BDDMockito.given(clinicService.findAllVisits()).willReturn(visits)
+        whenever(clinicService.findAllVisits()).thenReturn(emptyList())
         mockMvc.perform(
             MockMvcRequestBuilders.get("/api/visits/")
                 .accept(MediaType.APPLICATION_JSON)
@@ -182,7 +178,7 @@ class VisitRestControllerTests(
     @Test
     @WithMockUser(roles = ["OWNER_ADMIN"])
     fun testUpdateVisitSuccess() {
-        BDDMockito.given(clinicService.findVisitById(2)).willReturn(visits[0])
+        whenever(clinicService.findVisitById(2)).thenReturn(visits[0])
         val newVisit = visits[0].apply { description = "rabies shot test" }
         val mapper = ObjectMapper()
         mapper.registerModule(JavaTimeModule())
@@ -227,7 +223,7 @@ class VisitRestControllerTests(
         val mapper = ObjectMapper()
         mapper.registerModule(JavaTimeModule())
         val newVisitAsJSON = mapper.writeValueAsString(VisitMapper.toVisitDto(newVisit))
-        BDDMockito.given(clinicService.findVisitById(2)).willReturn(visits[0])
+        whenever(clinicService.findVisitById(2)).thenReturn(visits[0])
         mockMvc.perform(
             MockMvcRequestBuilders.delete("/api/visits/2")
                 .content(newVisitAsJSON).accept(MediaType.APPLICATION_JSON_VALUE)
@@ -243,7 +239,7 @@ class VisitRestControllerTests(
         val mapper = ObjectMapper()
         mapper.registerModule(JavaTimeModule())
         val newVisitAsJSON = mapper.writeValueAsString(VisitMapper.toVisitDto(newVisit))
-        BDDMockito.given(clinicService.findVisitById(999)).willReturn(null)
+        whenever(clinicService.findVisitById(999)).thenReturn(null)
         mockMvc.perform(
             MockMvcRequestBuilders.delete("/api/visits/999")
                 .content(newVisitAsJSON).accept(MediaType.APPLICATION_JSON_VALUE)

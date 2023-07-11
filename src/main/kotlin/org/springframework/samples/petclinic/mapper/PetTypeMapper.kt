@@ -2,7 +2,6 @@ package org.springframework.samples.petclinic.mapper
 
 import org.springframework.samples.petclinic.model.PetType
 import org.springframework.samples.petclinic.rest.dto.PetTypeDto
-import org.springframework.samples.petclinic.rest.dto.PetTypeFieldsDto
 
 /**
  * Map PetType & PetTypeDto using mapstruct
@@ -12,16 +11,10 @@ object PetTypeMapper {
         if (petTypeDto == null) {
             return null
         }
-        return PetType().apply {
-            id = petTypeDto.id
-            name = petTypeDto.name
-        }
-    }
-
-    fun toPetType(petTypeFieldsDto: PetTypeFieldsDto): PetType {
-        return PetType().apply {
-            name = petTypeFieldsDto.name
-        }
+        return PetType(
+            id = petTypeDto.id,
+            name = petTypeDto.name,
+        )
     }
 
     fun toPetTypeDto(petType: PetType?): PetTypeDto? {
@@ -35,7 +28,7 @@ object PetTypeMapper {
     fun toNotNullPetTypeDto(petType: PetType): PetTypeDto {
         return PetTypeDto(
             id = petType.id ?: 0,
-            name = petType.name.orEmpty()
+            name = petType.name.orEmpty(),
         )
     }
 

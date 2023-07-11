@@ -8,10 +8,10 @@ import org.springframework.samples.petclinic.rest.dto.SpecialtyDto
  */
 object SpecialtyMapper {
     fun toSpecialty(specialtyDto: SpecialtyDto): Specialty {
-        return Specialty().apply {
-            id = specialtyDto.id
-            name = specialtyDto.name
-        }
+        return Specialty(
+            id = specialtyDto.id,
+            name = specialtyDto.name,
+        )
     }
 
     fun toSpecialtyDto(specialty: Specialty): SpecialtyDto {

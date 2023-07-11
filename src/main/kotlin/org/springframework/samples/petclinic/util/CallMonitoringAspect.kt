@@ -58,7 +58,6 @@ class CallMonitoringAspect {
         get() = if (callCount > 0) accumulatedCallTime / callCount else 0
 
     @Around("within(@org.springframework.stereotype.Repository *)")
-    @Throws(Throwable::class)
     operator fun invoke(joinPoint: ProceedingJoinPoint): Any {
         return if (isEnabled) {
             val sw = StopWatch(joinPoint.toShortString())

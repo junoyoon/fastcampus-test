@@ -29,12 +29,11 @@ import java.io.Serializable
  * @author Juergen Hoeller
  */
 @MappedSuperclass
-open class BaseEntity: Serializable {
-
+open class BaseEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Int? = null
-
+) : Serializable {
     @get:JsonIgnore
     val isNew: Boolean
         get() = this.id == null

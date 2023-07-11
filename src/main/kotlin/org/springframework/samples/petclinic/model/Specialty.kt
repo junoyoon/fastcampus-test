@@ -25,4 +25,7 @@ import jakarta.persistence.Table
  */
 @Entity
 @Table(name = "specialties")
-class Specialty : NamedEntity()
+class Specialty(
+    id: Int? = null,
+    name: String? = null,
+) : NamedEntity(id, name)

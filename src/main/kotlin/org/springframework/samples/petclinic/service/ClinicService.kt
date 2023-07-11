@@ -176,6 +176,7 @@ class ClinicService(
             // just ignore not found exceptions for Jdbc/Jpa realization
             return null
         } catch (e: EmptyResultDataAccessException) {
+            e.printStackTrace()
             return null
         }
     }

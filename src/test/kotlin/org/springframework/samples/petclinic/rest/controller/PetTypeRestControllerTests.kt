@@ -16,18 +16,17 @@
 package org.springframework.samples.petclinic.rest.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.mockito.BDDMockito
+import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType
+import org.springframework.samples.petclinic.ApplicationTestConfig
 import org.springframework.samples.petclinic.mapper.PetTypeMapper
 import org.springframework.samples.petclinic.model.PetType
 import org.springframework.samples.petclinic.rest.advice.ExceptionControllerAdvice
 import org.springframework.samples.petclinic.service.ClinicService
-import org.springframework.samples.petclinic.ApplicationTestConfig
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.web.WebAppConfiguration
@@ -44,29 +43,24 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders
 @ContextConfiguration(classes = [ApplicationTestConfig::class])
 @WebAppConfiguration
 class PetTypeRestControllerTests(
-    @Autowired petTypeRestController: PetTypeRestController
+    @Autowired petTypeRestController: PetTypeRestController,
+    @Autowired @MockBean var clinicService: ClinicService
 ) {
-
-    @MockBean
-    lateinit var clinicService: ClinicService
-
     private val mockMvc = MockMvcBuilders.standaloneSetup(petTypeRestController)
         .setControllerAdvice(ExceptionControllerAdvice())
         .build()
-    private val petTypes = mutableListOf<PetType>()
-
-    @BeforeEach
-    fun initPetTypes() {
-        petTypes.add(PetType().apply { id = 1; name = "cat" })
-        petTypes.add(PetType().apply { id = 2; name = "dog" })
-        petTypes.add(PetType().apply { id = 3; name = "lizard" })
-        petTypes.add(PetType().apply { id = 4; name = "snake" })
-    }
+    
+    private val petTypes = listOf(
+        PetType( id = 1, name = "cat" ),
+        PetType( id = 2, name = "dog" ),
+        PetType( id = 3, name = "lizard"),
+        PetType( id = 4, name = "snake")
+    )
 
     @Test
     @WithMockUser(roles = ["OWNER_ADMIN"])
     fun testGetPetTypeSuccessAsOwnerAdmin() {
-        BDDMockito.given(clinicService.findPetTypeById(1)).willReturn(petTypes[0])
+        whenever(clinicService.findPetTypeById(1)).thenReturn(petTypes[0])
         mockMvc.perform(
             MockMvcRequestBuilders.get("/api/pettypes/1")
                 .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -80,7 +74,7 @@ class PetTypeRestControllerTests(
     @Test
     @WithMockUser(roles = ["VET_ADMIN"])
     fun testGetPetTypeSuccessAsVetAdmin() {
-        BDDMockito.given(clinicService.findPetTypeById(1)).willReturn(petTypes[0])
+        whenever(clinicService.findPetTypeById(1)).thenReturn(petTypes[0])
         mockMvc.perform(
             MockMvcRequestBuilders.get("/api/pettypes/1")
                 .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -94,7 +88,7 @@ class PetTypeRestControllerTests(
     @Test
     @WithMockUser(roles = ["OWNER_ADMIN"])
     fun testGetPetTypeNotFound() {
-        BDDMockito.given(clinicService.findPetTypeById(999)).willReturn(null)
+        whenever(clinicService.findPetTypeById(999)).thenReturn(null)
         mockMvc.perform(
             MockMvcRequestBuilders.get("/api/pettypes/999")
                 .accept(MediaType.APPLICATION_JSON)
@@ -105,17 +99,15 @@ class PetTypeRestControllerTests(
     @Test
     @WithMockUser(roles = ["OWNER_ADMIN"])
     fun testGetAllPetTypesSuccessAsOwnerAdmin() {
-        petTypes.removeAt(0)
-        petTypes.removeAt(1)
-        BDDMockito.given(clinicService.findAllPetTypes()).willReturn(petTypes)
+        whenever(clinicService.findAllPetTypes()).thenReturn(petTypes.drop(2))
         mockMvc.perform(
             MockMvcRequestBuilders.get("/api/pettypes/")
                 .accept(MediaType.APPLICATION_JSON)
         )
             .andExpect(MockMvcResultMatchers.status().isOk())
             .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.[0].id").value(2))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.[0].name").value("dog"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.[0].id").value(3))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.[0].name").value("lizard"))
             .andExpect(MockMvcResultMatchers.jsonPath("$.[1].id").value(4))
             .andExpect(MockMvcResultMatchers.jsonPath("$.[1].name").value("snake"))
     }
@@ -123,17 +115,15 @@ class PetTypeRestControllerTests(
     @Test
     @WithMockUser(roles = ["VET_ADMIN"])
     fun testGetAllPetTypesSuccessAsVetAdmin() {
-        petTypes.removeAt(0)
-        petTypes.removeAt(1)
-        BDDMockito.given(clinicService.findAllPetTypes()).willReturn(petTypes)
+        whenever(clinicService.findAllPetTypes()).thenReturn(petTypes.drop(2))
         mockMvc.perform(
             MockMvcRequestBuilders.get("/api/pettypes/")
                 .accept(MediaType.APPLICATION_JSON)
         )
             .andExpect(MockMvcResultMatchers.status().isOk())
             .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.[0].id").value(2))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.[0].name").value("dog"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.[0].id").value(3))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.[0].name").value("lizard"))
             .andExpect(MockMvcResultMatchers.jsonPath("$.[1].id").value(4))
             .andExpect(MockMvcResultMatchers.jsonPath("$.[1].name").value("snake"))
     }
@@ -141,8 +131,7 @@ class PetTypeRestControllerTests(
     @Test
     @WithMockUser(roles = ["VET_ADMIN"])
     fun testGetAllPetTypesNotFound() {
-        petTypes.clear()
-        BDDMockito.given(clinicService.findAllPetTypes()).willReturn(petTypes)
+        whenever(clinicService.findAllPetTypes()).thenReturn(emptyList())
         mockMvc.perform(
             MockMvcRequestBuilders.get("/api/pettypes/")
                 .accept(MediaType.APPLICATION_JSON)
@@ -153,7 +142,7 @@ class PetTypeRestControllerTests(
     @Test
     @WithMockUser(roles = ["VET_ADMIN"])
     fun testCreatePetTypeSuccess() {
-        val newPetType = petTypes[0].apply { id = 999 }
+        val newPetType = PetType(id = 999, name = petTypes[0].name)
         val mapper = ObjectMapper()
         val newPetTypeAsJSON = mapper.writeValueAsString(PetTypeMapper.toPetTypeDto(newPetType))
         mockMvc.perform(
@@ -167,7 +156,7 @@ class PetTypeRestControllerTests(
     @Test
     @WithMockUser(roles = ["VET_ADMIN"])
     fun testCreatePetTypeError() {
-        val newPetType = petTypes[0].apply { id = null; name = null }
+        val newPetType = PetType(id = null, name = null)
         val mapper = ObjectMapper()
         val newPetTypeAsJSON = mapper.writeValueAsString(PetTypeMapper.toPetTypeDto(newPetType))
         mockMvc.perform(
@@ -180,10 +169,9 @@ class PetTypeRestControllerTests(
 
     @Test
     @WithMockUser(roles = ["VET_ADMIN"])
-    @Throws(Exception::class)
     fun testUpdatePetTypeSuccess() {
-        BDDMockito.given(clinicService.findPetTypeById(2)).willReturn(petTypes[1])
-        val newPetType = petTypes[1].apply { name = "dog I" }
+        whenever(clinicService.findPetTypeById(2)).thenReturn(petTypes[1])
+        val newPetType = PetType(id = 2, name = "dog I")
         val mapper = ObjectMapper()
         val newPetTypeAsJSON = mapper.writeValueAsString(PetTypeMapper.toNotNullPetTypeDto(newPetType))
         mockMvc.perform(
@@ -206,7 +194,7 @@ class PetTypeRestControllerTests(
     @Test
     @WithMockUser(roles = ["VET_ADMIN"])
     fun testUpdatePetTypeError() {
-        val newPetType = petTypes[0].apply { name = "" }
+        val newPetType = PetType(id = 1, name = "")
         val mapper = ObjectMapper()
         val newPetTypeAsJSON = mapper.writeValueAsString(PetTypeMapper.toNotNullPetTypeDto(newPetType))
         mockMvc.perform(
@@ -223,7 +211,7 @@ class PetTypeRestControllerTests(
         val newPetType = petTypes[0]
         val mapper = ObjectMapper()
         val newPetTypeAsJSON = mapper.writeValueAsString(newPetType)
-        BDDMockito.given(clinicService.findPetTypeById(1)).willReturn(petTypes[0])
+        whenever(clinicService.findPetTypeById(1)).thenReturn(petTypes[0])
         mockMvc.perform(
             MockMvcRequestBuilders.delete("/api/pettypes/1")
                 .content(newPetTypeAsJSON).accept(MediaType.APPLICATION_JSON_VALUE)
@@ -238,7 +226,7 @@ class PetTypeRestControllerTests(
         val newPetType = petTypes[0]
         val mapper = ObjectMapper()
         val newPetTypeAsJSON = mapper.writeValueAsString(PetTypeMapper.toPetTypeDto(newPetType))
-        BDDMockito.given(clinicService.findPetTypeById(999)).willReturn(null)
+        whenever(clinicService.findPetTypeById(999)).thenReturn(null)
         mockMvc.perform(
             MockMvcRequestBuilders.delete("/api/pettypes/999")
                 .content(newPetTypeAsJSON).accept(MediaType.APPLICATION_JSON_VALUE)

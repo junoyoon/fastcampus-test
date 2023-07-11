@@ -15,9 +15,7 @@
  */
 package org.springframework.samples.petclinic.model
 
-import com.fasterxml.jackson.annotation.JsonIgnore
 import jakarta.persistence.*
-import jakarta.xml.bind.annotation.XmlElement
 import org.springframework.beans.support.MutableSortDefinition
 import org.springframework.beans.support.PropertyComparator
 
@@ -31,7 +29,13 @@ import org.springframework.beans.support.PropertyComparator
  */
 @Entity
 @Table(name = "vets")
-class Vet : Person() {
+class Vet(
+    id: Int? = null,
+    firstName: String? = "",
+    lastName: String? = ""
+
+) : Person(id, firstName, lastName) {
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "vet_specialties",

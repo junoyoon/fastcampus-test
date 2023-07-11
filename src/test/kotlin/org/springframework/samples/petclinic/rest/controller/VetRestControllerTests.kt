@@ -16,18 +16,17 @@
 package org.springframework.samples.petclinic.rest.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.mockito.BDDMockito
+import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType
+import org.springframework.samples.petclinic.ApplicationTestConfig
 import org.springframework.samples.petclinic.mapper.VetMapper
 import org.springframework.samples.petclinic.model.Vet
 import org.springframework.samples.petclinic.rest.advice.ExceptionControllerAdvice
 import org.springframework.samples.petclinic.service.ClinicService
-import org.springframework.samples.petclinic.ApplicationTestConfig
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.web.WebAppConfiguration
@@ -45,26 +44,23 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders
 @WebAppConfiguration
 class VetRestControllerTests(
     @Autowired vetRestController: VetRestController,
+    @Autowired @MockBean val clinicService: ClinicService
 ) {
-    @MockBean
-    lateinit var clinicService: ClinicService
-    
     private val mockMvc = MockMvcBuilders.standaloneSetup(vetRestController)
         .setControllerAdvice(ExceptionControllerAdvice())
         .build()
-    private var vets = mutableListOf<Vet>()
 
-    @BeforeEach
-    fun initVets() {
-        vets.add(Vet().apply { id = 1; firstName = "James"; lastName = "Carter" })
-        vets.add(Vet().apply { id = 2; firstName = "Helen"; lastName = "Leary" })
-        vets.add(Vet().apply { id = 3; firstName = "Linda"; lastName = "Douglas" })
-    }
+    private var vets = listOf(
+        Vet( id = 1, firstName = "James", lastName = "Carter" ),
+        Vet(id = 2, firstName = "Helen", lastName = "Leary" ),
+        Vet( id = 3, firstName = "Linda", lastName = "Douglas" )
+    )
+
 
     @Test
     @WithMockUser(roles = ["VET_ADMIN"])
     fun testGetVetSuccess() {
-        BDDMockito.given(clinicService.findVetById(1)).willReturn(vets[0])
+        whenever(clinicService.findVetById(1)).thenReturn(vets[0])
         mockMvc.perform(
             MockMvcRequestBuilders.get("/api/vets/1")
                 .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -78,7 +74,7 @@ class VetRestControllerTests(
     @Test
     @WithMockUser(roles = ["VET_ADMIN"])
     fun testGetVetNotFound() {
-        BDDMockito.given(clinicService.findVetById(-1)).willReturn(null)
+        whenever(clinicService.findVetById(-1)).thenReturn(null)
         mockMvc.perform(
             MockMvcRequestBuilders.get("/api/vets/999")
                 .accept(MediaType.APPLICATION_JSON)
@@ -89,7 +85,7 @@ class VetRestControllerTests(
     @Test
     @WithMockUser(roles = ["VET_ADMIN"])
     fun testGetAllVetsSuccess() {
-        BDDMockito.given(clinicService.findAllVets()).willReturn(vets)
+        whenever(clinicService.findAllVets()).thenReturn(vets)
         mockMvc.perform(
             MockMvcRequestBuilders.get("/api/vets/")
                 .accept(MediaType.APPLICATION_JSON)
@@ -105,8 +101,7 @@ class VetRestControllerTests(
     @Test
     @WithMockUser(roles = ["VET_ADMIN"])
     fun testGetAllVetsNotFound() {
-        vets.clear()
-        BDDMockito.given(clinicService.findAllVets()).willReturn(vets)
+        whenever(clinicService.findAllVets()).thenReturn(emptyList())
         mockMvc.perform(
             MockMvcRequestBuilders.get("/api/vets/")
                 .accept(MediaType.APPLICATION_JSON)
@@ -117,7 +112,7 @@ class VetRestControllerTests(
     @Test
     @WithMockUser(roles = ["VET_ADMIN"])
     fun testCreateVetSuccess() {
-        val newVet = vets[0].apply { id = 999 }
+        val newVet = Vet(id = 999, lastName = vets[0].lastName, firstName = vets[0].firstName)
         val mapper = ObjectMapper()
         val newVetAsJSON = mapper.writeValueAsString(VetMapper.toVetDto(newVet))
         mockMvc.perform(
@@ -131,7 +126,7 @@ class VetRestControllerTests(
     @Test
     @WithMockUser(roles = ["VET_ADMIN"])
     fun testCreateVetError() {
-        val newVet = vets[0].apply { id = null; firstName = null }
+        val newVet = Vet(id = null, lastName = vets[0].lastName, firstName = null)
         val mapper = ObjectMapper()
         val newVetAsJSON = mapper.writeValueAsString(VetMapper.toVetDto(newVet))
         mockMvc.perform(
@@ -145,8 +140,8 @@ class VetRestControllerTests(
     @Test
     @WithMockUser(roles = ["VET_ADMIN"])
     fun testUpdateVetSuccess() {
-        BDDMockito.given(clinicService.findVetById(1)).willReturn(vets[0])
-        val newVet = vets[0].apply { firstName = "James" }
+        whenever(clinicService.findVetById(1)).thenReturn(vets[0])
+        val newVet =  Vet(id = vets[0].id, lastName = vets[0].lastName, firstName = "James")
         val mapper = ObjectMapper()
         val newVetAsJSON = mapper.writeValueAsString(VetMapper.toVetDto(newVet))
         mockMvc.perform(
@@ -169,7 +164,7 @@ class VetRestControllerTests(
     @Test
     @WithMockUser(roles = ["VET_ADMIN"])
     fun testUpdateVetError() {
-        val newVet = vets[0].apply { firstName = null }
+        val newVet =  Vet(id = vets[0].id, lastName = vets[0].lastName, firstName = null)
         val mapper = ObjectMapper()
         val newVetAsJSON = mapper.writeValueAsString(VetMapper.toVetDto(newVet))
         mockMvc.perform(
@@ -186,7 +181,7 @@ class VetRestControllerTests(
         val newVet = vets[0]
         val mapper = ObjectMapper()
         val newVetAsJSON = mapper.writeValueAsString(VetMapper.toVetDto(newVet))
-        BDDMockito.given(clinicService.findVetById(1)).willReturn(vets[0])
+        whenever(clinicService.findVetById(1)).thenReturn(vets[0])
         mockMvc.perform(
             MockMvcRequestBuilders.delete("/api/vets/1")
                 .content(newVetAsJSON).accept(MediaType.APPLICATION_JSON_VALUE)
@@ -201,7 +196,7 @@ class VetRestControllerTests(
         val newVet = vets[0]
         val mapper = ObjectMapper()
         val newVetAsJSON = mapper.writeValueAsString(VetMapper.toVetDto(newVet))
-        BDDMockito.given(clinicService.findVetById(-1)).willReturn(null)
+        whenever(clinicService.findVetById(-1)).thenReturn(null)
         mockMvc.perform(
             MockMvcRequestBuilders.delete("/api/vets/999")
                 .content(newVetAsJSON).accept(MediaType.APPLICATION_JSON_VALUE)

@@ -21,25 +21,25 @@ object OwnerMapper {
     }
 
     fun toOwner(ownerDto: OwnerDto): Owner {
-        return Owner().apply {
-            id = ownerDto.id
-            firstName = ownerDto.firstName
-            lastName = ownerDto.lastName
-            address = ownerDto.address
-            city = ownerDto.city
-            telephone = ownerDto.telephone
+        return Owner(
+            id = ownerDto.id,
+            firstName = ownerDto.firstName,
+            lastName = ownerDto.lastName,
+            address = ownerDto.address,
+            city = ownerDto.city,
+            telephone = ownerDto.telephone,
             pets = PetMapper.toPets(ownerDto.pets.orEmpty()).toMutableSet()
-        }
+        )
     }
 
     fun toOwner(ownerDto: OwnerFieldsDto): Owner {
-        return Owner().apply {
-            firstName = ownerDto.firstName
-            lastName = ownerDto.lastName
-            address = ownerDto.address
-            city = ownerDto.city
-            telephone = ownerDto.telephone
-        }
+        return Owner(
+            firstName = ownerDto.firstName,
+            lastName = ownerDto.lastName,
+            address = ownerDto.address,
+            city = ownerDto.city,
+            telephone = ownerDto.telephone,
+        )
     }
 
     fun toOwnerDtoCollection(ownerCollection: List<Owner>): List<OwnerDto> {

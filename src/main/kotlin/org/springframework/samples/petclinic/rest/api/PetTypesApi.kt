@@ -14,8 +14,8 @@ import jakarta.validation.Valid
 import jakarta.validation.constraints.Min
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.samples.petclinic.rest.dto.PetFieldsDto
 import org.springframework.samples.petclinic.rest.dto.PetTypeDto
+import org.springframework.samples.petclinic.rest.dto.PetTypeFieldsDto
 import org.springframework.samples.petclinic.rest.dto.RestErrorDto
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
@@ -220,7 +220,7 @@ interface PetTypesApi {
         @Parameter(
             description = "The pet type",
             required = true
-        ) @Valid @RequestBody petTypeDto: PetTypeDto
+        ) @Valid @RequestBody petTypeFieldsDto: PetTypeFieldsDto
     ): ResponseEntity<PetTypeDto> {
         return ResponseEntity(HttpStatus.NOT_IMPLEMENTED)
     }

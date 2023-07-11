@@ -1,6 +1,4 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import org.jetbrains.kotlin.kapt3.base.Kapt.kapt
-
 
 description = "Kotlin version of the Spring Petclinic REST application"
 group = "org.springframework.samples"
@@ -18,6 +16,12 @@ plugins {
     kotlin("jvm") version kotlinVersion
     kotlin("plugin.spring") version kotlinVersion
     kotlin("plugin.jpa") version kotlinVersion
+}
+
+allOpen {
+    annotation("javax.persistence.Entity")
+    annotation("javax.persistence.MappedSuperclass")
+    annotation("javax.persistence.Embeddable")
 }
 
 tasks.withType<KotlinCompile> {
@@ -49,12 +53,14 @@ dependencies {
     implementation("org.glassfish.jaxb:jaxb-runtime")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
 
-
+    testImplementation("org.mockito.kotlin:mockito-kotlin:5.0.0")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.boot:spring-boot-starter-webflux")
     testImplementation("org.springframework.security:spring-security-test")
     testImplementation("org.junit.jupiter:junit-jupiter-api")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
+
+    runtimeOnly("com.h2database:h2:2.2.220")
     runtimeOnly("org.hsqldb:hsqldb")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     implementation(kotlin("stdlib-jdk8"))

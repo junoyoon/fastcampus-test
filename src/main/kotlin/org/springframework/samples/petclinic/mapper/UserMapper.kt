@@ -10,24 +10,20 @@ import org.springframework.samples.petclinic.rest.dto.UserDto
  */
 object UserMapper {
     fun toRole(roleDto: RoleDto): Role {
-        return Role().apply {
-            this.name = roleDto.name
-        }
+        return Role(name = roleDto.name)
     }
 
     fun toRoleDto(role: Role): RoleDto {
-        return RoleDto(
-            name = role.name.orEmpty()
-        )
+        return RoleDto(name = role.name.orEmpty())
     }
 
     fun toUser(userDto: UserDto): User {
-        return User().apply {
-            this.enabled = userDto.enabled
-            this.password = userDto.password
-            this.username = userDto.username
-            this.roles = userDto.roles?.map { toRole(it) }?.toMutableSet()
-        }
+        return User(
+            enabled = userDto.enabled,
+            password = userDto.password,
+            username = userDto.username,
+            roles = userDto.roles?.map { toRole(it) }?.toMutableSet(),
+        )
     }
 
     fun toUserDto(user: User): UserDto {

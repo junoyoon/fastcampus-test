@@ -19,23 +19,19 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.databind.node.NullNode
 import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.databind.node.TextNode
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import net.bytebuddy.asm.Advice.Local
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.mockito.BDDMockito
-import org.mockito.Mockito
+import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType
+import org.springframework.samples.petclinic.ApplicationTestConfig
 import org.springframework.samples.petclinic.mapper.PetMapper
 import org.springframework.samples.petclinic.rest.advice.ExceptionControllerAdvice
 import org.springframework.samples.petclinic.rest.dto.PetDto
 import org.springframework.samples.petclinic.rest.dto.PetTypeDto
 import org.springframework.samples.petclinic.service.ClinicService
-import org.springframework.samples.petclinic.ApplicationTestConfig
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.web.WebAppConfiguration
@@ -55,38 +51,25 @@ import java.time.LocalDate
 @WebAppConfiguration
 class PetRestControllerTests(
     @Autowired petRestController: PetRestController,
+    @Autowired @MockBean val clinicService: ClinicService
 ) {
-    @MockBean
-    lateinit var clinicService: ClinicService
 
     private val mockMvc = MockMvcBuilders.standaloneSetup(petRestController)
         .setControllerAdvice(ExceptionControllerAdvice())
         .build()
 
-    private val pets = mutableListOf<PetDto>()
-
-    @BeforeEach
-    fun initPets() {
-        val petType = PetTypeDto(id = 2, name = "dog")
-        pets.add(
-            PetDto(
-                id = 3,
-                name = "Rosy",
-                birthDate = LocalDate.now(),
-                type = petType,
-                visits = emptyList()
-            )
-        )
-        pets.add(
-            PetDto(id = 4, name = "Jewel", birthDate = LocalDate.now(), type = petType)
-        )
-    }
+    private val pets = listOf(
+        PetDto(
+            id = 3, name = "Rosy", birthDate = LocalDate.now(),
+            type = PetTypeDto(id = 2, name = "dog"), visits = emptyList()
+        ),
+        PetDto(id = 4, name = "Jewel", birthDate = LocalDate.now(), type = PetTypeDto(id = 2, name = "dog"))
+    )
 
     @Test
     @WithMockUser(roles = ["OWNER_ADMIN"])
-    @Throws(Exception::class)
     fun testGetPetSuccess() {
-        BDDMockito.given(clinicService.findPetById(3)).willReturn(PetMapper.toPet(pets[0]))
+        whenever(clinicService.findPetById(3)).thenReturn(PetMapper.toPet(pets[0]))
         mockMvc.perform(
             MockMvcRequestBuilders.get("/api/pets/3")
                 .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -99,9 +82,8 @@ class PetRestControllerTests(
 
     @Test
     @WithMockUser(roles = ["OWNER_ADMIN"])
-    @Throws(Exception::class)
     fun testGetPetNotFound() {
-        BDDMockito.given(PetMapper.toNullablePetDto(clinicService.findPetById(-1))).willReturn(null)
+        whenever(PetMapper.toNullablePetDto(clinicService.findPetById(-1))).thenReturn(null)
         mockMvc.perform(
             MockMvcRequestBuilders.get("/api/pets/999")
                 .accept(MediaType.APPLICATION_JSON)
@@ -113,9 +95,8 @@ class PetRestControllerTests(
     @WithMockUser(roles = ["OWNER_ADMIN"])
     fun testGetAllPetsSuccess() {
         val pets = PetMapper.toPets(pets)
-        System.err.println(pets)
-        Mockito.`when`(clinicService.findAllPets()).thenReturn(pets)
-        //given(this.clinicService.findAllPets()).willReturn(PetMapper.toPets(pets));
+        whenever(clinicService.findAllPets()).thenReturn(pets)
+        //given(this.clinicService.findAllPets()).thenReturn(PetMapper.toPets(pets));
         mockMvc.perform(
             MockMvcRequestBuilders.get("/api/pets/")
                 .accept(MediaType.APPLICATION_JSON)
@@ -131,8 +112,7 @@ class PetRestControllerTests(
     @Test
     @WithMockUser(roles = ["OWNER_ADMIN"])
     fun testGetAllPetsNotFound() {
-        pets.clear()
-        BDDMockito.given(clinicService.findAllPets()).willReturn(PetMapper.toPets(pets))
+        whenever(clinicService.findAllPets()).thenReturn(PetMapper.toPets(emptyList()))
         mockMvc.perform(
             MockMvcRequestBuilders.get("/api/pets/")
                 .accept(MediaType.APPLICATION_JSON)
@@ -143,8 +123,8 @@ class PetRestControllerTests(
     @Test
     @WithMockUser(roles = ["OWNER_ADMIN"])
     fun testUpdatePetSuccess() {
-        BDDMockito.given(clinicService.findPetById(3)).willReturn(PetMapper.toPet(pets[0]))
-        val newPet = pets[0].copy( name = "Rosy I" )
+        whenever(clinicService.findPetById(3)).thenReturn(PetMapper.toPet(pets[0]))
+        val newPet = pets[0].copy(name = "Rosy I")
         val mapper = ObjectMapper()
         mapper.registerModule(JavaTimeModule())
         mapper.setDateFormat(SimpleDateFormat("yyyy-MM-dd"))
@@ -193,7 +173,7 @@ class PetRestControllerTests(
         val mapper = ObjectMapper()
         mapper.registerModule(JavaTimeModule())
         val newPetAsJSON = mapper.writeValueAsString(newPet)
-        BDDMockito.given(clinicService.findPetById(3)).willReturn(PetMapper.toPet(pets[0]))
+        whenever(clinicService.findPetById(3)).thenReturn(PetMapper.toPet(pets[0]))
         mockMvc.perform(
             MockMvcRequestBuilders.delete("/api/pets/3")
                 .content(newPetAsJSON).accept(MediaType.APPLICATION_JSON_VALUE)
@@ -209,7 +189,7 @@ class PetRestControllerTests(
         val mapper = ObjectMapper()
         mapper.registerModule(JavaTimeModule())
         val newPetAsJSON = mapper.writeValueAsString(newPet)
-        BDDMockito.given(clinicService.findPetById(999)).willReturn(null)
+        whenever(clinicService.findPetById(999)).thenReturn(null)
         mockMvc.perform(
             MockMvcRequestBuilders.delete("/api/pets/999")
                 .content(newPetAsJSON).accept(MediaType.APPLICATION_JSON_VALUE)

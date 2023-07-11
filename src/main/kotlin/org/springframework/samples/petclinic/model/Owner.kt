@@ -29,23 +29,29 @@ import jakarta.validation.constraints.NotEmpty
  */
 @Entity
 @Table(name = "owners")
-class Owner : Person() {
+class Owner(
+    id: Int? = null,
+
+    firstName: String? = "",
+
+    lastName: String? = "",
+
     @Column(name = "address")
-    @NotEmpty
-    var address = ""
+    @field:NotEmpty
+    var address: String = "",
 
     @Column(name = "city")
-    @NotEmpty
-    var city = ""
+    @field:NotEmpty
+    var city: String = "",
 
     @Column(name = "telephone")
-    @NotEmpty
-    @Digits(fraction = 0, integer = 10)
-    var telephone = ""
+    @field:NotEmpty
+    @field:Digits(fraction = 0, integer = 10)
+    var telephone: String = "",
 
     @OneToMany(cascade = [CascadeType.ALL], mappedBy = "owner")
-    var pets: MutableSet<Pet> = HashSet()
-
+    var pets: MutableSet<Pet> = HashSet(),
+) : Person(id, firstName, lastName) {
 
     fun getPets(): List<Pet> =
         pets.sortedWith(compareBy { it.name })

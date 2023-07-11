@@ -10,18 +10,18 @@ import java.time.LocalDate
  */
 object VisitMapper {
     fun toVisit(visitDto: VisitDto): Visit {
-        return Visit().apply {
-            this.id = visitDto.id
-            this.description = visitDto.description
-            this.date = visitDto.date ?: LocalDate.now()
-        }
+        return Visit(
+            id = visitDto.id,
+            description = visitDto.description,
+            date = visitDto.date ?: LocalDate.now()
+        )
     }
 
     fun toVisit(visitFieldsDto: VisitFieldsDto): Visit {
-        return Visit().apply {
-            this.description = visitFieldsDto.description
-            this.date = visitFieldsDto.date ?: LocalDate.now()
-        }
+        return Visit(
+            description = visitFieldsDto.description,
+            date = visitFieldsDto.date ?: LocalDate.now()
+        )
     }
 
     fun toVisitDto(visit: Visit): VisitDto {

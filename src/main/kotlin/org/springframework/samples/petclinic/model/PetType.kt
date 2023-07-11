@@ -24,4 +24,7 @@ import jakarta.persistence.Table
  */
 @Entity
 @Table(name = "types")
-class PetType : NamedEntity()
+class PetType(
+    id: Int? = null,
+    name: String? = null,
+) : NamedEntity(id, name)

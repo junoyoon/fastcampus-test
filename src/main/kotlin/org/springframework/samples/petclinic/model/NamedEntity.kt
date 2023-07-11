@@ -27,9 +27,12 @@ import jakarta.validation.constraints.NotEmpty
  * @author Juergen Hoeller
  */
 @MappedSuperclass
-open class NamedEntity : BaseEntity() {
+open class NamedEntity(
+    id: Int? = null,
+
     @Column(name = "name")
     var name: @NotEmpty String? = null
+) : BaseEntity(id) {
 
     override fun toString() = name.orEmpty()
 }

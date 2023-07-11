@@ -1,0 +1,48 @@
+# active profiles config
+#
+# application use two active profiles
+#
+# one for select repository layer
+# ------------------------------------------------
+# When using HSQL, use: hsqldb
+# When using MySQL, use: mysql
+# When using PostgeSQL, use: postgresql
+# ------------------------------------------------
+#
+# one - for select database
+# ------------------------------------------------
+# When using Spring jpa, use: jpa
+# When using Spring JDBC, use: jdbc
+# When using Spring Data JPA, use: spring-data-jpa
+# ------------------------------------------------
+
+spring:
+  jpa:
+    open-in-view: false
+  profiles:
+    active: h2,spring-data-jpa
+  messages:
+    basename: messages/messages
+
+logging:
+  level:
+    org:
+      springframework: INFO
+
+basic:
+  authentication:
+    enabled: true
+
+security:
+  ignored: /**
+
+server:
+  servlet:
+    context-path: /petclinic/
+  port: '9966'
+
+petclinic:
+  security:
+    enable: 'true'
+
+

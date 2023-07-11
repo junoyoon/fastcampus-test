@@ -3,26 +3,18 @@ package org.springframework.samples.petclinic.mapper
 
 import org.springframework.samples.petclinic.model.Vet
 import org.springframework.samples.petclinic.rest.dto.VetDto
-import org.springframework.samples.petclinic.rest.dto.VetFieldsDto
 
 /**
  * Map Vet & VetoDto using mapstruct
  */
 object VetMapper {
     fun toVet(vetDto: VetDto): Vet {
-        return Vet().apply {
-            this.id = vetDto.id
-            this.lastName = vetDto.lastName
-            this.firstName = vetDto.firstName
+        return Vet(
+            id = vetDto.id,
+            lastName = vetDto.lastName,
+            firstName = vetDto.firstName,
+        ).apply {
             this.setSpecialties(SpecialtyMapper.toSpecialtys(vetDto.specialties))
-        }
-    }
-
-    fun toVet(vetFieldsDto: VetFieldsDto): Vet {
-        return Vet().apply {
-            this.lastName = vetFieldsDto.lastName
-            this.firstName = vetFieldsDto.firstName
-            this.setSpecialties(SpecialtyMapper.toSpecialtys(vetFieldsDto.specialties))
         }
     }
 

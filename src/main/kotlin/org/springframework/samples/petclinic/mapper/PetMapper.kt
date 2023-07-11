@@ -22,7 +22,7 @@ object PetMapper {
             name = pet.name.orEmpty(),
             birthDate = pet.birthDate ?: LocalDate.now(),
             type = PetTypeMapper.toPetTypeDto(pet.type)!!,
-            visits = pet.getVisits()?.map { VisitMapper.toVisitDto(it) },
+            visits = pet.getVisits().map { VisitMapper.toVisitDto(it) },
             ownerId = pet.owner?.id
         )
     }
@@ -36,20 +36,21 @@ object PetMapper {
     }
 
     fun toPet(petDto: PetDto): Pet {
-        return Pet().apply {
-            this.id = petDto.id
-            this.name = petDto.name
-            this.type = PetTypeMapper.toPetType(petDto.type)
+        return Pet(
+            id = petDto.id,
+            name = petDto.name,
+            type = PetTypeMapper.toPetType(petDto.type),
+            birthDate = petDto.birthDate,
+        ).apply {
             this.setVisits(petDto.visits?.map { VisitMapper.toVisit(it) })
-            this.birthDate = petDto.birthDate
         }
     }
 
     fun toPet(petFieldsDto: PetFieldsDto): Pet {
-        return Pet().apply {
-            this.name = petFieldsDto.name
-            this.type = PetTypeMapper.toPetType(petFieldsDto.type)
-            this.birthDate = petFieldsDto.birthDate
-        }
+        return Pet(
+            name = petFieldsDto.name,
+            type = PetTypeMapper.toPetType(petFieldsDto.type),
+            birthDate = petFieldsDto.birthDate,
+        )
     }
 }

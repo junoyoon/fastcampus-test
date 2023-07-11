@@ -1,0 +1,20 @@
+# H2 config start
+#----------------------------------------------------------------
+
+spring:
+  sql:
+    init:
+      schema-locations: classpath*:db/h2/initDB.sql
+      data-locations: classpath*:db/h2/populateDB.sql
+  datasource:
+    username: sa
+    url: jdbc:h2:mem:petclinic;MODE=MySQL
+    password: ''
+  jpa:
+    database: H2
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: none
+
+#----------------------------------------------------------------
+# H2 config end

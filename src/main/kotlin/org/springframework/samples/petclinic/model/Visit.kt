@@ -27,22 +27,22 @@ import java.time.LocalDate
  */
 @Entity
 @Table(name = "visits")
-class Visit : BaseEntity() {
+class Visit(
+    id: Int? = null,
 
     /**
      * Holds value of property date.
      */
     @Column(name = "visit_date")
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    var date: LocalDate = LocalDate.now()
+    @field:DateTimeFormat(pattern = "yyyy-MM-dd")
+    var date: LocalDate = LocalDate.now(),
 
     /**
      * Holds value of property description.
      */
-    @NotEmpty
+    @field:NotEmpty
     @Column(name = "description")
-    var description: String? = null
-
+    var description: String? = null,
 
     /**
      * Holds value of property owner.
@@ -50,4 +50,4 @@ class Visit : BaseEntity() {
     @ManyToOne
     @JoinColumn(name = "pet_id")
     var pet: Pet? = null
-}
+) : BaseEntity(id)

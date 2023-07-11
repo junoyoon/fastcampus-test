@@ -31,22 +31,25 @@ import java.util.*
  */
 @Entity
 @Table(name = "pets")
-class Pet : NamedEntity() {
+class Pet(
+    id: Int? = null,
+    name: String? = null,
+
     @Column(name = "birth_date")
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    var birthDate: LocalDate? = null
+    @field:DateTimeFormat(pattern = "yyyy-MM-dd")
+    var birthDate: LocalDate? = null,
 
     @ManyToOne
     @JoinColumn(name = "type_id")
-    var type: PetType? = null
+    var type: PetType? = null,
 
     @ManyToOne
     @JoinColumn(name = "owner_id")
-    var owner: Owner? = null
+    var owner: Owner? = null,
 
     @OneToMany(cascade = [CascadeType.ALL], mappedBy = "pet", fetch = FetchType.EAGER)
-    private var visits: MutableSet<Visit>? = null
-
+    private var visits: MutableSet<Visit>? = null,
+) : NamedEntity(id, name) {
     fun getVisitsInternal(): MutableSet<Visit> {
         if (visits == null) {
             visits = HashSet()

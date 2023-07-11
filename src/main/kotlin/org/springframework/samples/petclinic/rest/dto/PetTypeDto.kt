@@ -14,13 +14,12 @@ import jakarta.validation.constraints.Size
 @Schema(name = "PetType", description = "A pet type.")
 @JsonTypeName("PetType")
 data class PetTypeDto(
+    @get:Min(0)
+    @Schema(example = "1", required = true, readOnly = true, description = "The ID of the pet type.")
+    @get:JsonProperty("id", required = true) val id: Int,
 
     @get:Size(min = 1, max = 80)
     @Schema(example = "cat", required = true, description = "The name of the pet type.")
     @get:JsonProperty("name", required = true) val name: String,
-
-    @get:Min(0)
-    @Schema(example = "1", required = true, readOnly = true, description = "The ID of the pet type.")
-    @get:JsonProperty("id", required = true) val id: Int
 )
 
