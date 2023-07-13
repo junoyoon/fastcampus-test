@@ -106,7 +106,7 @@ class SpecialtyRestControllerTests(
     @Test
     @WithMockUser(roles = ["VET_ADMIN"])
     fun testCreateSpecialtySuccess() {
-        val newSpecialty = Specialty( id = 999, name = specialties[0].name )
+        val newSpecialty = Specialty(id = 999, name = specialties[0].name )
         val mapper = ObjectMapper()
         val newSpecialtyAsJSON = mapper.writeValueAsString(SpecialtyMapper.toSpecialtyDto(newSpecialty))
         mockMvc.perform(

@@ -18,6 +18,8 @@ package org.springframework.samples.petclinic.model
 import jakarta.persistence.*
 import jakarta.validation.constraints.Digits
 import jakarta.validation.constraints.NotEmpty
+import org.hibernate.annotations.Fetch
+import org.springframework.data.repository.cdi.Eager
 
 /**
  * Simple JavaBean domain object representing an owner.
@@ -49,7 +51,7 @@ class Owner(
     @field:Digits(fraction = 0, integer = 10)
     var telephone: String = "",
 
-    @OneToMany(cascade = [CascadeType.ALL], mappedBy = "owner")
+    @OneToMany(fetch = FetchType.EAGER, cascade = [CascadeType.ALL], mappedBy = "owner")
     var pets: MutableSet<Pet> = HashSet(),
 ) : Person(id, firstName, lastName) {
 

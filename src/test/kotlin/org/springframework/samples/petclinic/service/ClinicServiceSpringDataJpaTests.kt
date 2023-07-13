@@ -19,6 +19,8 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.samples.petclinic.model.*
@@ -79,13 +81,13 @@ class ClinicServiceSpringDataJpaTests(
         @Transactional
         fun insertOwner() {
             val owners = clinicService.findOwnerByLastName("Schultz")
-            val owner = Owner().apply {
-                this.firstName = "Sam"
-                this.lastName = "Schultz"
-                this.address = "4, Evans Street"
-                this.city = "Wollongong"
-                this.telephone = "4444444444"
-            }
+            val owner = Owner(
+                firstName = "Sam",
+                lastName = "Schultz",
+                address = "4, Evans Street",
+                city = "Wollongong",
+                telephone = "4444444444",
+            )
 
             clinicService.saveOwner(owner)
             assertThat(owner.id).isNotEqualTo(0)
@@ -115,6 +117,15 @@ class ClinicServiceSpringDataJpaTests(
             assertThat(owner3.firstName).isEqualTo("Eduardo")
         }
 
+
+        @ParameterizedTest
+        @CsvSource(value = ["1, George", "3, Eduardo"])
+        fun findAllOwners(id: Int, name: String) {
+            val owners = clinicService.findAllOwners()
+            val owner = owners.first { it.id == id }
+            assertThat(owner.firstName).isEqualTo(name)
+        }
+
         @Test
         @Transactional
         fun deleteOwner() {
@@ -140,12 +151,11 @@ class ClinicServiceSpringDataJpaTests(
         fun insertPet() {
             val owner6 = clinicService.findOwnerById(6)!!
             val found: Int = owner6.getPets().size
-            val pet = Pet().apply {
-                this.name = "bowser"
-                val types = clinicService.findPetTypes()
-                this.type = types.find { it.id == 2 }
-                this.birthDate = LocalDate.now()
-            }
+            val pet = Pet(
+                name = "bowser",
+                type = clinicService.findPetTypes().first { it.id == 2 },
+                birthDate = LocalDate.now()
+            )
 
             owner6.addPet(pet)
             assertThat(owner6.getPets()).hasSize(found + 1)
@@ -172,10 +182,10 @@ class ClinicServiceSpringDataJpaTests(
         @Test
         fun findAllPets() {
             val pets = clinicService.findAllPets()
-            val pet1 = pets.find { it.id == 1 }
-            assertThat(pet1?.name).isEqualTo("Leo")
-            val pet3 = pets.find { it.id == 3 }
-            assertThat(pet3?.name).isEqualTo("Rosy")
+            val pet1 = pets.first { it.id == 1 }
+            assertThat(pet1.name).isEqualTo("Leo")
+            val pet3 = pets.first { it.id == 3 }
+            assertThat(pet3.name).isEqualTo("Rosy")
         }
 
         @Test
@@ -194,7 +204,7 @@ class ClinicServiceSpringDataJpaTests(
         @Test
         fun findVets() {
             val vets = clinicService.findVets()
-            val vet = vets.find { it.id == 3 }!!
+            val vet = vets.first { it.id == 3 }
             assertThat(vet.lastName).isEqualTo("Douglas")
             assertThat(vet.nrOfSpecialties).isEqualTo(2)
             assertThat(vet.getSpecialties()[0].name).isEqualTo("dentistry")
@@ -213,7 +223,7 @@ class ClinicServiceSpringDataJpaTests(
         fun saveVet_insert() {
             var vets = clinicService.findAllVets()
             val found = vets.size
-            val vet = Vet().apply { this.firstName = "John"; this.lastName = "Dow" }
+            val vet = Vet( firstName = "John", lastName = "Dow" )
             clinicService.saveVet(vet)
             assertThat(vet.id).isNotEqualTo(0)
             vets = clinicService.findAllVets()
@@ -247,7 +257,7 @@ class ClinicServiceSpringDataJpaTests(
         fun saveVisit_withPet() {
             val pet7: Pet = clinicService.findPetById(7)!!
             val found = pet7.getVisits().size
-            val visit = Visit().apply { description = "test" }
+            val visit = Visit(description = "test")
 
             pet7.addVisit(visit)
             clinicService.saveVisit(visit)
@@ -277,9 +287,9 @@ class ClinicServiceSpringDataJpaTests(
         @Test
         fun findAllVisits() {
             val visits = clinicService.findAllVisits()
-            val visit1 = visits.find { it.id == 1 }!!
+            val visit1 = visits.first { it.id == 1 }
             assertThat(visit1.pet!!.name).isEqualTo("Samantha")
-            val visit3 = visits.find { it.id == 3 }!!
+            val visit3 = visits.first { it.id == 3 }
             assertThat(visit3.pet!!.name).isEqualTo("Max")
         }
 
@@ -288,11 +298,11 @@ class ClinicServiceSpringDataJpaTests(
         fun saveVisit_insert() {
             val visits = clinicService.findAllVisits()
             val pet = clinicService.findPetById(1)
-            val visit = Visit().apply {
-                this.pet = pet
-                this.date = LocalDate.now()
-                this.description = "new visit"
-            }
+            val visit = Visit(
+                pet = pet,
+                date = LocalDate.now(),
+                description = "new visit"
+            )
             clinicService.saveVisit(visit)
             assertThat(visit.id).isNotEqualTo(0)
             val actual = clinicService.findAllVisits()
@@ -329,9 +339,9 @@ class ClinicServiceSpringDataJpaTests(
         @Test
         fun findAllPetTypes() {
             val petTypes = clinicService.findAllPetTypes()
-            val petType1 = petTypes.find { it.id == 1 }!!
+            val petType1 = petTypes.first { it.id == 1 }
             assertThat(petType1.name).isEqualTo("cat")
-            val petType3 = petTypes.find { it.id == 3 }!!
+            val petType3 = petTypes.first { it.id == 3 }
             assertThat(petType3.name).isEqualTo("lizard")
         }
 
@@ -339,7 +349,7 @@ class ClinicServiceSpringDataJpaTests(
         @Transactional
         fun savePetType_insert() {
             val petTypes = clinicService.findAllPetTypes()
-            val petType = PetType().apply { name = "tiger" }
+            val petType = PetType(name = "tiger")
             clinicService.savePetType(petType)
             assertThat(petType.id).isNotEqualTo(0)
             val actual = clinicService.findAllPetTypes()
@@ -376,9 +386,9 @@ class ClinicServiceSpringDataJpaTests(
         @Test
         fun findAllSpecialties() {
             val specialties = clinicService.findAllSpecialties()
-            val specialty1 = specialties.find { it.id == 1 }!!
+            val specialty1 = specialties.first { it.id == 1 }
             assertThat(specialty1.name).isEqualTo("radiology")
-            val specialty3 = specialties.find { it.id == 3 }!!
+            val specialty3 = specialties.first { it.id == 3 }
             assertThat(specialty3.name).isEqualTo("dentistry")
         }
 
@@ -386,7 +396,7 @@ class ClinicServiceSpringDataJpaTests(
         @Transactional
         fun saveSpecialty_insert() {
             val specialties = clinicService.findAllSpecialties()
-            val specialty = Specialty().apply { name = "dermatologist" }
+            val specialty = Specialty(name = "dermatologist")
             clinicService.saveSpecialty(specialty)
             assertThat(specialty.id).isNotEqualTo(0)
             val actual = clinicService.findAllSpecialties()
@@ -404,7 +414,7 @@ class ClinicServiceSpringDataJpaTests(
         @Test
         @Transactional
         fun deleteSpecialty() {
-            val specialty = Specialty().apply { name = "test" }
+            val specialty = Specialty(name = "test")
             clinicService.saveSpecialty(specialty)
             val specialtyId = specialty.id!!
             assertThat(specialtyId).isNotNull()

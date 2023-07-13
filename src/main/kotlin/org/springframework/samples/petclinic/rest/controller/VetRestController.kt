@@ -16,6 +16,7 @@
 package org.springframework.samples.petclinic.rest.controller
 
 import jakarta.transaction.Transactional
+import jakarta.validation.Valid
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -57,7 +58,7 @@ class VetRestController(
     }
 
     @PreAuthorize("hasRole(@roles.VET_ADMIN)")
-    override fun addVet(vetDto: VetDto): ResponseEntity<VetDto> {
+    override fun addVet(@Valid vetDto: VetDto): ResponseEntity<VetDto> {
         val vet = VetMapper.toVet(vetDto)
         clinicService.saveVet(vet)
         val headers = HttpHeaders().apply {

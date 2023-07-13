@@ -15,7 +15,7 @@ import jakarta.validation.constraints.Size
 @JsonTypeName("Specialty")
 data class SpecialtyDto(
 
-    @get:Min(0)
+    @field:Min(0)
     @Schema(example = "1", required = true, readOnly = true, description = "The ID of the specialty.")
     @get:JsonProperty("id", required = true) val id: Int,
 

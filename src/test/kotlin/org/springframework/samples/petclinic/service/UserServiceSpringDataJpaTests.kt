@@ -12,17 +12,10 @@ import org.springframework.samples.petclinic.model.User
 class UserServiceSpringDataJpaTests(
     @Autowired private val userService: UserService
 ) {
-    @BeforeEach
-    fun init() {
-        MockitoAnnotations.openMocks(this)
-    }
 
     @Test
     fun shouldAddUser() {
-        val user = User().apply {
-            this.username = "username"
-            this.password = "password"
-            this.enabled = true
+        val user = User(username = "username", password = "password", enabled = true,).apply {
             this.addRole("OWNER_ADMIN")
         }
 

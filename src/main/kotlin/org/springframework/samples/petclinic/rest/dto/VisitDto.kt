@@ -24,7 +24,7 @@ data class VisitDto(
 
     @get:Min(0)
     @Schema(example = "1", required = true, readOnly = true, description = "The ID of the visit.")
-    @get:JsonProperty("id", required = true) val id: Int,
+    @get:JsonProperty("id", required = true) val id: Int = 0,
 
     @field:Valid
     @Schema(example = "Tue Jan 01 09:00:00 KST 2013", description = "The date of the visit.")

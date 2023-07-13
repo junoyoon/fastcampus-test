@@ -15,6 +15,7 @@
  */
 package org.springframework.samples.petclinic.service
 
+import io.kotest.assertions.assertSoftly
 import io.kotest.datatest.withData
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.nulls.shouldBeNull
@@ -65,28 +66,27 @@ class ClinicServiceSpringDataJpaKoTests(
             sut.findOwnerByLastName("Davis") shouldHaveSize 2
             sut.findOwnerByLastName("Daviss") shouldHaveSize 0
         }
+
         test("findOwnerById") {
             val actual = sut.findOwnerById(1)
-            actual.shouldNotBeNull()
-                .run {
-                    lastName shouldStartWith "Franklin"
-                    getPets() shouldHaveSize 1
-                }
-            with(actual.getPets()[0]) {
-                type.shouldNotBeNull().name shouldBe "cat"
+            assertSoftly(actual.shouldNotBeNull()) {
+                lastName shouldStartWith "Franklin"
+                getPets() shouldHaveSize 1
             }
+
+            actual.getPets()[0].shouldNotBeNull().name shouldBe "cat"
         }
 
         test("saveOwner") {
             val owners = sut.findOwnerByLastName("Schultz")
             val found = owners.size
-            val owner = Owner().apply {
-                this.firstName = "Sam"
-                this.lastName = "Schultz"
-                this.address = "4, Evans Street"
-                this.city = "Wollongong"
-                this.telephone = "4444444444"
-            }
+            val owner = Owner(
+                firstName = "Sam",
+                lastName = "Schultz",
+                address = "4, Evans Street",
+                city = "Wollongong",
+                telephone = "4444444444",
+            )
             sut.saveOwner(owner)
             owner.id shouldNotBe 0
             owner.getPet("null value").shouldBeNull()
@@ -106,18 +106,16 @@ class ClinicServiceSpringDataJpaKoTests(
             val owner6 = sut.findOwnerById(6)
             val found6: Int = owner6
                 .shouldNotBeNull().getPets().size
-            val pet = Pet().apply {
-                this.name = "bowser"
-                val types = sut.findPetTypes()
-                this.type = types.find { it.id == 2 }
-                this.birthDate = LocalDate.now()
-            }
 
+            val pet = Pet(
+                name = "bowser",
+                type = sut.findPetTypes().first() { it.id == 2 },
+                birthDate = LocalDate.now(),
+            )
 
             owner6.addPet(pet)
 
             owner6.getPets() shouldHaveSize found6 + 1
-
             sut.savePet(pet)
             sut.saveOwner(owner6)
 
@@ -141,6 +139,7 @@ class ClinicServiceSpringDataJpaKoTests(
     }
 
     context("pet") {
+        // FIXME : 실습 data driven test
         test("shouldFindAllPets") {
             val actual = sut.findAllPets()
             actual.first { it.id == 1 }.shouldNotBeNull().name shouldBe "Leo"
@@ -185,11 +184,11 @@ class ClinicServiceSpringDataJpaKoTests(
         test("saveVisit") {
             val visits = sut.findAllVisits()
             val found = visits.size
-            val visit = Visit().apply {
-                this.pet = sut.findPetById(1)
-                this.date = LocalDate.now()
-                this.description = "new visit"
-            }
+            val visit = Visit(
+                pet = sut.findPetById(1),
+                date = LocalDate.now(),
+                description = "new visit",
+            )
 
             sut.saveVisit(visit)
             visit.id shouldNotBe 0
@@ -198,13 +197,11 @@ class ClinicServiceSpringDataJpaKoTests(
 
 
         test("update") {
-            val visit = sut.findVisitById(1)!!
-            val newDesc = visit.description + "X"
-            visit.description = newDesc
+            val visit = sut.findVisitById(1)!!.apply {this.description += "X"}
 
             sut.saveVisit(visit)
             sut.findVisitById(1).shouldNotBeNull()
-                .description shouldBe newDesc
+                .description shouldBe visit.description
         }
 
 
@@ -218,7 +215,7 @@ class ClinicServiceSpringDataJpaKoTests(
         test("saveVisit with Pet") {
             val pet7: Pet = sut.findPetById(7)!!
             val found: Int = pet7.getVisits().size
-            val visit = Visit().apply { description = "test" }
+            val visit = Visit( description = "test" )
             pet7.addVisit(visit)
 
             sut.saveVisit(visit)
@@ -229,6 +226,7 @@ class ClinicServiceSpringDataJpaKoTests(
 
         }
 
+        // FIXME: assertSoftly 로 수정
         test("findVisitsByPetId") {
             val actual = sut.findVisitsByPetId(7)
             actual.shouldHaveSize(2)
@@ -236,6 +234,11 @@ class ClinicServiceSpringDataJpaKoTests(
                 it.pet.shouldNotBeNull().id shouldBe 7
                 it.date.shouldNotBeNull()
             }
+//
+//            assertSoftly(actual[0]) {
+//                pet.shouldNotBeNull().id shouldBe 7
+//                date.shouldNotBeNull()
+//            }
         }
 
     }
@@ -250,7 +253,7 @@ class ClinicServiceSpringDataJpaKoTests(
 
         test("saveVet") {
             val vets = sut.findAllVets()
-            val vet = Vet().apply { this.firstName = "John"; this.lastName = "Dow" }
+            val vet = Vet( firstName = "John", lastName = "Dow" )
             sut.saveVet(vet)
             vet.id shouldNotBe 0
             sut.findAllVets() shouldHaveSize vets.size + 1
@@ -294,7 +297,7 @@ class ClinicServiceSpringDataJpaKoTests(
         test("savePetType") {
             val petTypes = sut.findAllPetTypes()
             val found = petTypes.size
-            val petType = PetType().apply { name = "tiger" }
+            val petType = PetType( name = "tiger" )
             sut.savePetType(petType)
 
             petType.id shouldNotBe 0
@@ -314,7 +317,7 @@ class ClinicServiceSpringDataJpaKoTests(
         }
     }
 
-    context("sepecialty") {
+    context("specialty") {
         test("findSpecialtyById") {
             sut.findSpecialtyById(1).shouldNotBeNull().name shouldBe "radiology"
         }
@@ -327,7 +330,7 @@ class ClinicServiceSpringDataJpaKoTests(
 
         test("saveSpecialty") {
             val specialties = sut.findAllSpecialties()
-            val specialty = Specialty().apply { name = "dermatologist" }
+            val specialty = Specialty( name = "dermatologist" )
             sut.saveSpecialty(specialty)
             specialty.id.shouldNotBeNull()
             sut.findAllSpecialties() shouldHaveSize specialties.size + 1
@@ -341,7 +344,7 @@ class ClinicServiceSpringDataJpaKoTests(
 
 
         test("deleteSpecialty") {
-            val specialty = Specialty().apply { name = "test" }
+            val specialty = Specialty( name = "test" )
             sut.saveSpecialty(specialty)
             val specialtyId = specialty.id.shouldNotBeNull()
             val saved = sut.findSpecialtyById(specialtyId).shouldNotBeNull()

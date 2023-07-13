@@ -19,22 +19,22 @@ import jakarta.validation.constraints.Size
 @JsonTypeName("Vet")
 data class VetDto(
 
-    @get:Pattern(regexp = "^[a-zA-Z]*$")
-    @get:Size(min = 1, max = 30)
+    @field:Pattern(regexp = "[a-zA-Z]{1,50}")
+    @field:Size(min = 1, max = 50)
     @Schema(example = "James", required = true, description = "The first name of the vet.")
-    @get:JsonProperty("firstName", required = true) val firstName: String,
+    @field:JsonProperty("firstName", required = true) val firstName: String,
 
-    @get:Pattern(regexp = "^[a-zA-Z]*$")
-    @get:Size(min = 1, max = 30)
+    @field:Pattern(regexp = "[a-zA-Z]{1,50}")
+    @field:Size(min = 1, max = 50)
     @Schema(example = "Carter", required = true, description = "The last name of the vet.")
-    @get:JsonProperty("lastName", required = true) val lastName: String,
+    @field:JsonProperty("lastName", required = true) val lastName: String,
 
     @field:Valid
     @Schema(example = "null", required = true, description = "The specialties of the vet.")
     @get:JsonProperty("specialties", required = true) val specialties: List<SpecialtyDto>,
 
-    @get:Min(0)
+    @field:Min(0)
     @Schema(example = "1", required = true, readOnly = true, description = "The ID of the vet.")
-    @get:JsonProperty("id", required = true) val id: Int
+    @field:JsonProperty("id", required = true) val id: Int = 0
 )
 
