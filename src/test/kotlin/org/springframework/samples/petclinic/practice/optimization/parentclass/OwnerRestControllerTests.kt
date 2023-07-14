@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.samples.petclinic.rest.controller
+package org.springframework.samples.petclinic.practice.optimization.parentclass
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
@@ -28,6 +28,7 @@ import org.springframework.http.MediaType
 import org.springframework.samples.petclinic.mapper.OwnerMapper
 import org.springframework.samples.petclinic.mapper.VisitMapper
 import org.springframework.samples.petclinic.rest.advice.ExceptionControllerAdvice
+import org.springframework.samples.petclinic.rest.controller.OwnerRestController
 import org.springframework.samples.petclinic.rest.dto.OwnerDto
 import org.springframework.samples.petclinic.rest.dto.PetDto
 import org.springframework.samples.petclinic.rest.dto.PetTypeDto
@@ -38,6 +39,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
+import org.springframework.transaction.annotation.Transactional
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 
@@ -46,11 +48,12 @@ import java.time.LocalDate
  *
  * @author Vitaliy Fedoriv
  */
+@Transactional
 @SpringBootTest
 class OwnerRestControllerTests(
     @Autowired ownerRestController: OwnerRestController,
     @Autowired @MockBean val clinicService: ClinicService,
-) {
+) : AbstractRestControllerTest() {
     private var mockMvc = MockMvcBuilders.standaloneSetup(ownerRestController)
         .setControllerAdvice(ExceptionControllerAdvice())
         .build()

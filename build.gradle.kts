@@ -53,6 +53,10 @@ dependencies {
     implementation("org.glassfish.jaxb:jaxb-runtime")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
 
+    testImplementation("com.marcinziolo:kotlin-wiremock:2.0.2")
+    testImplementation("com.navercorp.fixturemonkey:fixture-monkey:0.5.9")
+    testImplementation("com.navercorp.fixturemonkey:fixture-monkey-kotlin:0.5.9")
+    testImplementation("com.navercorp.fixturemonkey:fixture-monkey-jakarta-validation:0.5.9")
     testImplementation("io.kotest:kotest-runner-junit5:5.6.2")
     testImplementation("io.kotest:kotest-assertions-core-jvm:5.6.2")
     testImplementation("io.kotest:kotest-property:5.6.2")

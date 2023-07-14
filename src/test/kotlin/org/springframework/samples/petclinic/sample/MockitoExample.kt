@@ -29,7 +29,6 @@ class MockitoExample {
             if (it.arguments[0] == 4) "fifth" else "unknown"
         }
         whenever(mocked.get(5)).thenThrow(RuntimeException())
-
         assertSoftly(mocked) {
             get(0) shouldBe "first"
             get(1) shouldBe "second"

@@ -31,31 +31,34 @@ class JUnitExample {
     @AfterEach
     fun afterEach() = println("called after test method")
 
-    @DisplayName("plus 정상 동작 테스트") @Test
+    @DisplayName("plus 정상 동작 테스트")
+    @Test
     fun method1() {
         val actual = sut.plus(1, 2)
         assertEquals(1 + 2, actual) { "$actual should be same as 3" }
     }
 
-
-    @ParameterizedTest @CsvSource(value = ["1,2,3", "2,2,4"])
+    @ParameterizedTest
+    @CsvSource(value = ["1,2,3", "2,2,4"])
     fun method1_withParam(a: Int, b: Int, c: Int) {
         val actual = sut.plus(a, b)
         assertTrue(actual == c) { "$actual should be same to $c" }
     }
 
-    @Disabled @Test
+    @Disabled("그냥 disable 시켰음") @Test
     fun method1_disabled() { /* no-op */ }
 
     @Nested
     inner class NestedTest {
-        @DisabledOnOs(OS.WINDOWS) @RepeatedTest(10)
+        @DisabledOnOs(OS.WINDOWS)
+        @RepeatedTest(10)
         fun method1_repeated() { println("repeated") }
     }
 
     class Calculator {
         fun plus(a: Int, b: Int) = a + b
     }
-
 }
+
+
 

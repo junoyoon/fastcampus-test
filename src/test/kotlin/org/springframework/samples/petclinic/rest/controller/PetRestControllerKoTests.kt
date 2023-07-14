@@ -29,14 +29,11 @@ import org.springframework.http.MediaType
 import org.springframework.samples.petclinic.SpringFunSpec
 import org.springframework.samples.petclinic.mapper.PetMapper
 import org.springframework.samples.petclinic.rest.advice.ExceptionControllerAdvice
+import org.springframework.samples.petclinic.rest.controller.PetRestController
 import org.springframework.samples.petclinic.rest.dto.PetDto
 import org.springframework.samples.petclinic.rest.dto.PetTypeDto
 import org.springframework.samples.petclinic.service.ClinicService
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
-import org.springframework.security.core.authority.SimpleGrantedAuthority
-import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.test.context.support.WithMockUser
-import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.setup.MockMvcBuilders

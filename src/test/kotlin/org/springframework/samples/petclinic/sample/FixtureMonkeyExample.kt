@@ -5,12 +5,10 @@ import com.navercorp.fixturemonkey.jakarta.validation.plugin.JakartaValidationPl
 import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
 import com.navercorp.fixturemonkey.kotlin.giveMeOne
 import io.kotest.matchers.ints.shouldBeBetween
-import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldHaveLengthBetween
 import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.Min
-import jakarta.validation.constraints.Pattern
 import jakarta.validation.constraints.Size
 import org.junit.jupiter.api.Test
 

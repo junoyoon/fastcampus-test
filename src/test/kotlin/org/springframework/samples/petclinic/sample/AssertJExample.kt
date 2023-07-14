@@ -42,13 +42,14 @@ class AssertJExample {
         val expected = Person(Name("Yoon", "JunHo"), Sex.MALE, 100)
 
         assertThat(actual)
-            .isSex(Sex.FEMALE)
+            .isSex(Sex.MALE)
             // 재귀적으로 필드별 비교 가능, 필드 비교에서 제외할 필드 지정
             .usingRecursiveComparison()
             .ignoringFields("luck")
             .isEqualTo(expected)
 
-        assertThatThrownBy { throw RuntimeException("error") }.isInstanceOf(RuntimeException::class.java)
+        assertThatThrownBy { throw RuntimeException("error") }
+            .isInstanceOf(RuntimeException::class.java)
 
     }
 
@@ -63,5 +64,8 @@ class AssertJExample {
         return this
     }
 }
+
+
+
 
 

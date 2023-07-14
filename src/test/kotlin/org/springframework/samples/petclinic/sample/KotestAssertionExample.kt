@@ -54,16 +54,15 @@ class KotestAssertionExample : FunSpec({
         val actual = Person(Name("Yoon", "JunHo"), Sex.MALE, 0)
         val expected = Person(Name("Yoon", "JunHo"), Sex.MALE, 100)
 
-        actual.shouldHaveSex(Sex.MALE) // extension
+        actual.shouldBeSexOf(Sex.MALE) // extension
             // 재귀적으로 필드별 비교 가능, 필드 비교에서 제외할 필드 지정
-            .shouldBeEqualToComparingFields(
-                expected,
+            .shouldBeEqualToComparingFields(expected,
                 FieldsEqualityCheckConfig(propertiesToExclude = listOf(Person::luck))
             )
 
         assertSoftly(actual) {
-            actual.sex shouldBe Sex.MALE
-            actual.luck shouldBe 0
+            sex shouldBe Sex.MALE
+            luck shouldBe 0
         }
     }
 })
@@ -74,7 +73,7 @@ class Person(val name : Name, val sex: Sex, val luck: Int) {
 }
 
 // custom asserting 추가
-fun Person.shouldHaveSex(sex: Sex): Person {
+fun Person.shouldBeSexOf(sex: Sex): Person {
     this.sex shouldBe sex
     return this
 }
