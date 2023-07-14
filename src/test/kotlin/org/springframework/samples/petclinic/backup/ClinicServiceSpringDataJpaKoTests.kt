@@ -13,17 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.samples.petclinic.practice
+package org.springframework.samples.petclinic.backup
 
+import io.kotest.core.spec.style.FunSpec
+import io.kotest.data.forAll
+import io.kotest.data.headers
+import io.kotest.data.row
+import io.kotest.data.table
+import io.kotest.matchers.collections.shouldBeEmpty
+import io.kotest.matchers.collections.shouldHaveSize
+import io.kotest.matchers.nulls.shouldBeNull
+import io.kotest.matchers.nulls.shouldNotBeNull
+import io.kotest.matchers.should
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
+import io.kotest.matchers.string.shouldStartWith
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.samples.petclinic.SpringFunSpec
 import org.springframework.samples.petclinic.model.Owner
 import org.springframework.samples.petclinic.model.Pet
 import org.springframework.samples.petclinic.service.ClinicService
@@ -41,7 +53,7 @@ import org.springframework.transaction.annotation.Transactional
  * AbstractclinicServiceTests and its subclasses benefit from the following services provided by the Spring
  * TestContext Framework:    * **Spring IoC container caching** which spares us unnecessary set up
  * time between test execution.  * **Dependency Injection** of test fixture instances, meaning that
- * we don't need to perform application context lookups. See the use of [@Autowired][Autowired] on the `[ ][ClinicServiceSpringDataJpaTests.clinicService]` instance variable, which uses autowiring *by
+ * we don't need to perform application context lookups. See the use of [@Autowired][Autowired] on the `[ ][ClinicServiceSpringDataJpaKoTests.clinicService]` instance variable, which uses autowiring *by
  * type*.  * **Transaction management**, meaning each test method is executed in its own transaction,
  * which is automatically rolled back by default. Thus, even if tests insert or otherwise change database state, there
  * is no need for a teardown or cleanup script.  *  An [ ApplicationContext][org.springframework.context.ApplicationContext] is also inherited and can be used for explicit bean lookup if necessary.
@@ -57,41 +69,38 @@ import org.springframework.transaction.annotation.Transactional
  junit & assertj 실습
  1. Owner 테스트와 Pet 테스트를 각각 별도의 Nested Test 로 분리
  2. Junit assertion 을 assertj 로 변경
- 3. findAllOwners 를 @CsvSource 기반의 Parameterized Test 로 변경
+ 3. findAllOwner 를 @CsvSource 기반의 Parameterized Test 로 변경
 
  kotest & kotest assertion 실습
  1. kotest fun spec 으로 컨버팅
  2. Kotest assertion 사용
  3. @Nested => context
  */
+@Transactional
 @SpringBootTest
-class ClinicServiceSpringDataJpaTests(
+class ClinicServiceSpringDataJpaKoTests(
     @Autowired val clinicService: ClinicService,
-) {
-
+): SpringFunSpec({
     // owner 테스트
-    @Nested
-    inner class OwnerTest {
-        @Test
-        fun findOwnerByLastName() {
-            var owners = clinicService.findOwnerByLastName("Davis")
-            assertThat(owners).hasSize(2)
-            owners = clinicService.findOwnerByLastName("Daviss")
-            assertThat(owners).isEmpty()
+    context("owner") {
+        test("findOwnerByLastName") {
+            clinicService.findOwnerByLastName("Davis")
+                .shouldHaveSize(2)
+            clinicService.findOwnerByLastName("Daviss")
+                .shouldBeEmpty()
         }
 
-        @Test
-        fun findOwnerById_withPet() {
-            val owner = clinicService.findOwnerById(1)
-            assertThat(owner!!.lastName!!).startsWith("Franklin")
-            assertThat(owner.getPets()).hasSize(1)
-            assertThat(owner.getPets()[0].type).isNotNull()
-            assertThat(owner.getPets()[0].type!!.name).isEqualTo("cat")
+        test("findOwnerById_withPet") {
+            clinicService.findOwnerById(1)
+                .shouldNotBeNull()
+                .should {
+                    it.lastName.shouldNotBeNull().shouldStartWith("Franklin")
+                    it.getPets().shouldHaveSize(1)
+                    it.getPets()[0].type.shouldNotBeNull().name.shouldBe("cat")
+                }
         }
 
-        @Test
-        @Transactional
-        fun insertOwner() {
+        test("insertOwner") {
             val owners = clinicService.findOwnerByLastName("Schultz")
             //FIXME 이 부분을 FixtureMonkey 로 생성해 보기
             val owner = Owner(
@@ -103,72 +112,65 @@ class ClinicServiceSpringDataJpaTests(
             )
 
             clinicService.saveOwner(owner)
-            assertThat(owner.id).isNotEqualTo(0)
-            assertThat(owner.getPet("null value")).isNull()
-            val actual = clinicService.findOwnerByLastName("Schultz")
-            assertThat(actual).hasSize(owners.size + 1)
+            owner.id.shouldNotBe(0)
+            owner.getPet("null value").shouldBeNull()
+            clinicService.findOwnerByLastName("Schultz")
+                .shouldHaveSize(owners.size + 1)
         }
 
 
-        @Test
-        @Transactional
-        fun updateOwner() {
+        test("updateOwner") {
             val owner = clinicService.findOwnerById(1)!!.apply { lastName += "X" }
             clinicService.saveOwner(owner)
 
             // retrieving new name from database
-            val actual = clinicService.findOwnerById(1)!!
-            assertThat(actual.lastName).isEqualTo(owner.lastName)
+            clinicService.findOwnerById(1).shouldNotBeNull().lastName.shouldBe(owner.lastName)
         }
 
 
         // FIXME: 이 부분을 Parameterized Test 로 교체 (CsvSource)
-        @ParameterizedTest
-        @CsvSource(value = ["1, George", "3, Eduardo"])
-        fun findAllOwners(id : Int, firstName: String) {
-            val owners = clinicService.findAllOwners()
-            val owner1 = owners.first { it.id == id }
-            assertThat(owner1.firstName).isEqualTo(firstName)
+
+        table(
+            headers("id", "firstName"),
+            row(1, "George"),
+            row(3, "Eduardo")
+        ).forAll { id, firstName ->
+            test("findAllOwners $id, $firstName") {
+                val owners = clinicService.findAllOwners()
+                val owner1 = owners.first { it.id == id }
+                owner1.firstName.shouldBe(firstName)
+            }
         }
 
-        @Test
-        @Transactional
-        fun deleteOwner() {
+        test("deleteOwner") {
             val owner = clinicService.findOwnerById(1)!!
             clinicService.deleteOwner(owner)
-            assertThat(clinicService.findOwnerById(1)).isNull()
+            clinicService.findOwnerById(1).shouldBeNull()
         }
     }
-
     // pet 테스트
-    @Nested
-    inner class PetTest {
-        @Test
-        @Transactional
-        fun savePet_petName() {
+    context("pet") {
+        test("savePet_petName") {
             val pet7: Pet = clinicService.findPetById(7)!!.apply { name += "X" }
             clinicService.savePet(pet7)
-            val actual = clinicService.findPetById(7)!!
-            assertThat(actual.name).isEqualTo(pet7.name)
+            clinicService.findPetById(7)
+                .shouldNotBeNull()
+                .name.shouldBe(pet7.name)
         }
 
 
-        @Test
-        fun findAllPets() {
+        test("findAllPets") {
             val pets = clinicService.findAllPets()
             val pet1 = pets.first { it.id == 1 }
-            assertThat(pet1.name).isEqualTo("Leo")
+            pet1.name shouldBe "Leo"
             val pet3 = pets.first { it.id == 3 }
-            assertThat(pet3.name).isEqualTo("Rosy")
+            pet3.name shouldBe "Rosy"
         }
 
-        @Test
-        @Transactional
-        fun deletePet() {
+        test("deletePet") {
             val pet = clinicService.findPetById(1)!!
             clinicService.deletePet(pet)
-            assertThat(clinicService.findPetById(1)).isNull()
+            clinicService.findPetById(1).shouldBeNull()
         }
     }
-
-}
+})

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.samples.petclinic.practice
+package org.springframework.samples.petclinic.backup
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -57,7 +57,7 @@ import org.springframework.transaction.annotation.Transactional
  junit & assertj 실습
  1. Owner 테스트와 Pet 테스트를 각각 별도의 Nested Test 로 분리
  2. Junit assertion 을 assertj 로 변경
- 3. findAllOwners 를 @CsvSource 기반의 Parameterized Test 로 변경
+ 3. findAllOwner 를 @CsvSource 기반의 Parameterized Test 로 변경
 
  kotest & kotest assertion 실습
  1. kotest fun spec 으로 컨버팅
@@ -139,8 +139,8 @@ class ClinicServiceSpringDataJpaTests(
             assertThat(clinicService.findOwnerById(1)).isNull()
         }
     }
-
     // pet 테스트
+
     @Nested
     inner class PetTest {
         @Test
