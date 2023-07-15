@@ -18,8 +18,6 @@ package org.springframework.samples.petclinic.model
 import jakarta.persistence.*
 import jakarta.validation.constraints.Digits
 import jakarta.validation.constraints.NotEmpty
-import org.hibernate.annotations.Fetch
-import org.springframework.data.repository.cdi.Eager
 
 /**
  * Simple JavaBean domain object representing an owner.

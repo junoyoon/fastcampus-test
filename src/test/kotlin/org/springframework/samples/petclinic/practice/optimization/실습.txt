@@ -1,0 +1,8 @@
+@SpringBootTest 를 @DataJpaTest 로 변경해 보기
+= src/test/kotlin/org/springframework/samples/petclinic/practice/optimization/annotation/PetRepositoryTest.kt
+
+@SpringBootTest 를 @WebMvcTest 로 변경한 뒤에, 아예 @WebMvcTest 도 없애 보기
+= src/test/kotlin/org/springframework/samples/petclinic/practice/optimization/annotation/OwnerRestControllerTest.kt
+
+@MockBean @SpyBean 을 상위 클래스에 정의하여, Spring Context 리로딩을 막아 보기
+= src/test/kotlin/org/springframework/samples/petclinic/practice/optimization/parentclass

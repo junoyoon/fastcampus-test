@@ -15,6 +15,10 @@
  */
 package org.springframework.samples.petclinic.practice
 
+import com.navercorp.fixturemonkey.FixtureMonkey
+import com.navercorp.fixturemonkey.jakarta.validation.plugin.JakartaValidationPlugin
+import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
+import com.navercorp.fixturemonkey.kotlin.giveMeOne
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.data.forAll
 import io.kotest.data.headers
@@ -27,15 +31,7 @@ import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
-import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.string.shouldStartWith
-import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.jupiter.api.Nested
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.CsvSource
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.samples.petclinic.SpringFunSpec
@@ -106,16 +102,24 @@ class ClinicServiceSpringDataJpaKoTests(
         test("insertOwner") {
             val owners = clinicService.findOwnerByLastName("Schultz")
             //FIXME 이 부분을 FixtureMonkey 로 생성해 보기
+
+            val owner = fixtureMonkey.giveMeOne<Owner>().apply {
+                this.id = null
+                this.lastName = "Schultz"
+                this.pets = mutableSetOf()
+            }
+
+            /*
             val owner = Owner(
                 firstName = "Sam",
-               lastName = "Schultz",
+                lastName = "Schultz",
                 address = "4, Evans Street",
                 city = "Wollongong",
                 telephone = "4444444444",
-            )
+            )*/
 
             clinicService.saveOwner(owner)
-            owner.id.shouldNotBe(0)
+            owner.id.shouldNotBeNull()
             owner.getPet("null value").shouldBeNull()
             clinicService.findOwnerByLastName("Schultz").shouldHaveSize(owners.size + 1)
         }
@@ -172,4 +176,11 @@ class ClinicServiceSpringDataJpaKoTests(
             clinicService.findPetById(1).shouldBeNull()
         }
     }
-})
+}) {
+    companion object {
+        val fixtureMonkey = FixtureMonkey.builder()
+            .plugin(KotlinPlugin())
+            .plugin(JakartaValidationPlugin())
+            .build()
+    }
+}

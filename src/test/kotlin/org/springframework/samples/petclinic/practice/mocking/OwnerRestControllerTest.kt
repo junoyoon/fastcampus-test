@@ -8,12 +8,17 @@ import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.doNothing
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatusCode
+import org.springframework.samples.petclinic.model.Owner
 import org.springframework.samples.petclinic.rest.controller.OwnerRestController
 import org.springframework.samples.petclinic.service.ClinicService
 import org.springframework.security.test.context.support.WithMockUser
@@ -28,15 +33,23 @@ import org.springframework.security.test.context.support.WithMockUser
 @WebMvcTest(OwnerRestController::class)
 class OwnerRestControllerTest(
     @Autowired val ownerRestController: OwnerRestController,
-    // FIXME : 정상 동작하도록 clinicService Mock 추가
+    @Autowired @MockBean val clinicService: ClinicService,
 ) {
 
-    @Disabled("수정시 이 어노테이션을 지우시오")
     @Test
     fun listOwners() {
         // FIXME : 아래 두 조건에 맞도록 mock 작성
+        whenever(clinicService.findAllOwners()).thenReturn(listOf(Owner()))
         ownerRestController.listOwners(null).body
             .shouldNotBeNull() shouldNotHaveSize 0
+
+        whenever(clinicService.findOwnerByLastName("noname")).thenReturn(emptyList())
+        ownerRestController.listOwners("noname")
+            .shouldNotBeNull()
+            .should {
+                it.statusCode shouldBe HttpStatus.NOT_FOUND
+                it.body.shouldBeNull()
+            }
 
         ownerRestController.listOwners("noname")
             .shouldNotBeNull()
@@ -45,6 +58,8 @@ class OwnerRestControllerTest(
                 it.body.shouldBeNull()
             }
         // FIXME : 행위 검증 코드 작성
+        verify(clinicService).findAllOwners()
+        verify(clinicService, times(2)).findOwnerByLastName("noname")
     }
 }
 
