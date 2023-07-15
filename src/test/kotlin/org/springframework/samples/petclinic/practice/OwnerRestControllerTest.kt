@@ -1,4 +1,4 @@
-package org.springframework.samples.petclinic.practice.mocking
+package org.springframework.samples.petclinic.practice
 
 import io.kotest.inspectors.forAll
 import io.kotest.matchers.collections.shouldNotHaveSize
@@ -23,13 +23,8 @@ import org.springframework.samples.petclinic.rest.controller.OwnerRestController
 import org.springframework.samples.petclinic.service.ClinicService
 import org.springframework.security.test.context.support.WithMockUser
 
-/**
- * test double 실습
- * - 테스트가 정상 동작 하도록 clinicService stubbing 작성
- * - listOwners 메소드는 null 전달시 clinicService.findAllOwner 호출
- * - 스트링 전달시에는 findOwnerByLastName 호출. 여기서는 noname 으로 호출하였으므로 empty owner list 리턴
- * - 행위 검증 코드도 작성할 것
- */
+
+// FIXME: WebMvcTest 도 제거
 @WebMvcTest(OwnerRestController::class)
 class OwnerRestControllerTest(
     @Autowired val ownerRestController: OwnerRestController,

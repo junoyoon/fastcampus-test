@@ -18,10 +18,7 @@ package org.springframework.samples.petclinic.practice
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.CsvSource
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.samples.petclinic.model.Owner
@@ -53,122 +50,110 @@ import org.springframework.transaction.annotation.Transactional
  * @author Michael Isvy
  * @author Vitaliy Fedoriv
  */
-/*
- junit & assertj 실습
- 1. Owner 테스트와 Pet 테스트를 각각 별도의 Nested Test 로 분리
- 2. Junit assertion 을 assertj 로 변경
- 3. findAllOwners 를 @CsvSource 기반의 Parameterized Test 로 변경
+//
 
- kotest & kotest assertion 실습
- 1. kotest fun spec 으로 컨버팅
- 2. Kotest assertion 사용
- 3. @Nested => context
- */
 @SpringBootTest
 class ClinicServiceSpringDataJpaTests(
     @Autowired val clinicService: ClinicService,
 ) {
 
     // owner 테스트
-    @Nested
-    inner class OwnerTest {
-        @Test
-        fun findOwnerByLastName() {
-            var owners = clinicService.findOwnerByLastName("Davis")
-            assertThat(owners).hasSize(2)
-            owners = clinicService.findOwnerByLastName("Daviss")
-            assertThat(owners).isEmpty()
-        }
 
-        @Test
-        fun findOwnerById_withPet() {
-            val owner = clinicService.findOwnerById(1)
-            assertThat(owner!!.lastName!!).startsWith("Franklin")
-            assertThat(owner.getPets()).hasSize(1)
-            assertThat(owner.getPets()[0].type).isNotNull()
-            assertThat(owner.getPets()[0].type!!.name).isEqualTo("cat")
-        }
+    @Test
+    fun findOwnerByLastName() {
+        var owners = clinicService.findOwnerByLastName("Davis")
+        assertEquals(owners.size, 2)
+        owners = clinicService.findOwnerByLastName("Daviss")
+        assertTrue(owners.isEmpty())
+    }
 
-        @Test
-        @Transactional
-        fun insertOwner() {
-            val owners = clinicService.findOwnerByLastName("Schultz")
-            //FIXME 이 부분을 FixtureMonkey 로 생성해 보기
-            val owner = Owner(
-                firstName = "Sam",
-                lastName = "Schultz",
-                address = "4, Evans Street",
-                city = "Wollongong",
-                telephone = "4444444444",
-            )
+    @Test
+    fun findOwnerById_withPet() {
+        val owner = clinicService.findOwnerById(1)
+        assertTrue(owner!!.lastName!!.startsWith("Franklin"))
+        assertTrue(owner.getPets().size == 1)
+        assertTrue(owner.getPets()[0].type != null)
+        assertTrue(owner.getPets()[0].type!!.name == "cat")
+    }
 
-            clinicService.saveOwner(owner)
-            assertThat(owner.id).isNotEqualTo(0)
-            assertThat(owner.getPet("null value")).isNull()
-            val actual = clinicService.findOwnerByLastName("Schultz")
-            assertThat(actual).hasSize(owners.size + 1)
-        }
+    @Test
+    @Transactional
+    fun insertOwner() {
+        val owners = clinicService.findOwnerByLastName("Schultz")
+        //FIXME 이 부분을 FixtureMonkey 로 생성해 보기
+        val owner = Owner(
+            firstName = "Sam",
+            lastName = "Schultz",
+            address = "4, Evans Street",
+            city = "Wollongong",
+            telephone = "4444444444",
+        )
 
-
-        @Test
-        @Transactional
-        fun updateOwner() {
-            val owner = clinicService.findOwnerById(1)!!.apply { lastName += "X" }
-            clinicService.saveOwner(owner)
-
-            // retrieving new name from database
-            val actual = clinicService.findOwnerById(1)!!
-            assertThat(actual.lastName).isEqualTo(owner.lastName)
-        }
+        clinicService.saveOwner(owner)
+        assertThat(owner.id).isNotEqualTo(0)
+        assertThat(owner.getPet("null value")).isNull()
+        val actual = clinicService.findOwnerByLastName("Schultz")
+        assertThat(actual).hasSize(owners.size + 1)
+    }
 
 
-        // FIXME: 이 부분을 Parameterized Test 로 교체 (CsvSource)
-        @ParameterizedTest
-        @CsvSource(value = ["1, George", "3, Eduardo"])
-        fun findAllOwners(id : Int, firstName: String) {
-            val owners = clinicService.findAllOwners()
-            val owner1 = owners.first { it.id == id }
-            assertThat(owner1.firstName).isEqualTo(firstName)
-        }
+    @Test
+    @Transactional
+    fun updateOwner() {
+        val owner = clinicService.findOwnerById(1)!!.apply { lastName += "X" }
+        clinicService.saveOwner(owner)
 
-        @Test
-        @Transactional
-        fun deleteOwner() {
-            val owner = clinicService.findOwnerById(1)!!
-            clinicService.deleteOwner(owner)
-            assertThat(clinicService.findOwnerById(1)).isNull()
-        }
+        // retrieving new name from database
+        val actual = clinicService.findOwnerById(1)!!
+        assertThat(actual.lastName).isEqualTo(owner.lastName)
+    }
+
+
+    // FIXME: 이 부분을 Parameterized Test 로 교체 (CsvSource)
+    @Test
+    fun findAllOwners() {
+        val owners = clinicService.findAllOwners()
+        val owner1 = owners.first { it.id == 1 }
+        assertThat(owner1.firstName).isEqualTo("George")
+        val owner3 = owners.first { it.id == 3 }
+        assertThat(owner3.firstName).isEqualTo("Eduardo")
+    }
+
+    @Test
+    @Transactional
+    fun deleteOwner() {
+        val owner = clinicService.findOwnerById(1)!!
+        clinicService.deleteOwner(owner)
+        assertThat(clinicService.findOwnerById(1)).isNull()
     }
 
     // pet 테스트
-    @Nested
-    inner class PetTest {
-        @Test
-        @Transactional
-        fun savePet_petName() {
-            val pet7: Pet = clinicService.findPetById(7)!!.apply { name += "X" }
-            clinicService.savePet(pet7)
-            val actual = clinicService.findPetById(7)!!
-            assertThat(actual.name).isEqualTo(pet7.name)
-        }
+
+    @Test
+    @Transactional
+    fun savePet_petName() {
+        val pet7: Pet = clinicService.findPetById(7)!!.apply { name += "X" }
+        clinicService.savePet(pet7)
+        val actual = clinicService.findPetById(7)!!
+        assertThat(actual.name).isEqualTo(pet7.name)
+    }
 
 
-        @Test
-        fun findAllPets() {
-            val pets = clinicService.findAllPets()
-            val pet1 = pets.first { it.id == 1 }
-            assertThat(pet1.name).isEqualTo("Leo")
-            val pet3 = pets.first { it.id == 3 }
-            assertThat(pet3.name).isEqualTo("Rosy")
-        }
+    @Test
+    fun findAllPets() {
+        val pets = clinicService.findAllPets()
+        val pet1 = pets.first { it.id == 1 }
+        assertThat(pet1.name).isEqualTo("Leo")
+        val pet3 = pets.first { it.id == 3 }
+        assertThat(pet3.name).isEqualTo("Rosy")
+    }
 
-        @Test
-        @Transactional
-        fun deletePet() {
-            val pet = clinicService.findPetById(1)!!
-            clinicService.deletePet(pet)
-            assertThat(clinicService.findPetById(1)).isNull()
-        }
+    @Test
+    @Transactional
+    fun deletePet() {
+        val pet = clinicService.findPetById(1)!!
+        clinicService.deletePet(pet)
+        assertThat(clinicService.findPetById(1)).isNull()
     }
 
 }
