@@ -74,7 +74,7 @@ class ClinicServiceSpringDataJpaKoTests(
                 getPets() shouldHaveSize 1
             }
 
-            actual.getPets()[0].shouldNotBeNull().name shouldBe "cat"
+            actual.getPets()[0].shouldNotBeNull().name shouldBe "Leo"
         }
 
         test("saveOwner") {

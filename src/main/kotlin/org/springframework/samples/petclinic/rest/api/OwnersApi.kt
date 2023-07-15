@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.samples.petclinic.rest.dto.*
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
+import reactor.core.publisher.Mono
 
 @Validated
 @RequestMapping("\${api.base-path:/petclinic/api}")
@@ -238,6 +239,21 @@ interface OwnersApi {
     ): ResponseEntity<OwnerDto> {
         return ResponseEntity(HttpStatus.NOT_IMPLEMENTED)
     }
+
+    @RequestMapping(
+        method = [RequestMethod.GET],
+        value = ["/owners-webflux/{ownerId}"],
+        produces = ["application/json"],
+    )
+    fun getOwnerByWebFlux(
+        @Min(0) @Parameter(
+            description = "The ID of the pet owner.",
+            required = true
+        ) @PathVariable("ownerId") ownerId: Int
+    ): ResponseEntity<Mono<OwnerDto>> {
+        return ResponseEntity(HttpStatus.NOT_IMPLEMENTED)
+    }
+
 
     @Operation(
         summary = "Get a pet by ID",

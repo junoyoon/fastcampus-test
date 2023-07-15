@@ -13,6 +13,7 @@ plugins {
     id("io.spring.dependency-management") version "1.1.0"
     id("com.google.cloud.tools.jib") version "3.1.4"
     id("org.openapi.generator") version "6.6.0"
+    id("com.coditory.integration-test") version "1.4.5"
     kotlin("jvm") version kotlinVersion
     kotlin("plugin.spring") version kotlinVersion
     kotlin("plugin.jpa") version kotlinVersion
@@ -48,6 +49,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-security")
+    implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2")
     implementation("org.glassfish.jaxb:jaxb-runtime")
@@ -64,10 +66,14 @@ dependencies {
     testImplementation("io.kotest.extensions:kotest-extensions-spring:1.1.3")
     testImplementation("org.mockito.kotlin:mockito-kotlin:5.0.0")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("org.springframework.boot:spring-boot-starter-webflux")
     testImplementation("org.springframework.security:spring-security-test")
     testImplementation("org.junit.jupiter:junit-jupiter-api")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
+
+
+    integrationImplementation("io.rest-assured:kotlin-extensions:5.3.1")
+    integrationImplementation("io.rest-assured:spring-mock-mvc-kotlin-extensions:5.3.1")
+    integrationImplementation("io.rest-assured:spring-web-test-client:5.3.1")
 
     runtimeOnly("com.h2database:h2:2.2.220")
     runtimeOnly("org.hsqldb:hsqldb")

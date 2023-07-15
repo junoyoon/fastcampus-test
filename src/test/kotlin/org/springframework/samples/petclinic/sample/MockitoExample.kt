@@ -29,14 +29,17 @@ class MockitoExample {
             if (it.arguments[0] == 4) "fifth" else "unknown"
         }
         whenever(mocked.get(5)).thenThrow(RuntimeException())
-        assertSoftly(mocked) {
-            get(0) shouldBe "first"
-            get(1) shouldBe "second"
-            get(2) shouldBe "third"
-            get(3) shouldBe "fourth"
-            get(4) shouldBe "fifth"
-            shouldThrow<RuntimeException> { mocked.get(5) }
-            get(6) shouldBe null
+
+        assertSoftly {
+            with(mocked) {
+                get(0) shouldBe "first"
+                get(1) shouldBe "second"
+                get(2) shouldBe "third"
+                get(3) shouldBe "fourth"
+                get(4) shouldBe "fifth"
+                shouldThrow<RuntimeException> { mocked.get(5) }
+                get(6) shouldBe null
+            }
         }
         // 실행 결과 검증
         verify(mocked).get(0)

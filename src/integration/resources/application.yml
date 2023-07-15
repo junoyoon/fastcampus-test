@@ -2,19 +2,20 @@
 #
 # application use two active profiles
 #
-# one - for select database
+# one for select repository layer
 # ------------------------------------------------
 # When using HSQL, use: hsqldb
 # When using MySQL, use: mysql
 # When using PostgeSQL, use: postgresql
 # ------------------------------------------------
 #
-# one for select repository layer
+# one - for select database
 # ------------------------------------------------
 # When using Spring jpa, use: jpa
 # When using Spring JDBC, use: jdbc
 # When using Spring Data JPA, use: spring-data-jpa
 # ------------------------------------------------
+
 spring:
   jpa:
     open-in-view: false
@@ -28,8 +29,16 @@ logging:
     org:
       springframework: INFO
 
+basic:
+  authentication:
+    enabled: true
+
+security:
+  ignored: /**
+
 server:
-  port: 8080
+  servlet:
+    context-path: /
 
 petclinic:
   security:

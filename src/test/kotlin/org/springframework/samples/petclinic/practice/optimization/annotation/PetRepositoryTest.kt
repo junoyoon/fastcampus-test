@@ -9,6 +9,7 @@ import org.springframework.samples.petclinic.repository.PetRepository
 import org.springframework.transaction.annotation.Transactional
 
 // FIXME: @DataJpaTest 로 변경
+@Transactional
 @SpringBootTest
 class PetRepositoryTest(
     @Autowired val petRepository: PetRepository

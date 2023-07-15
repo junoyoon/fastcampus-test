@@ -19,28 +19,28 @@ import jakarta.validation.constraints.Size
  */
 data class OwnerDto(
 
-    @get:Pattern(regexp = "^[a-zA-Z]*$")
-    @get:Size(min = 1, max = 30)
+    @field:Pattern(regexp = "[a-zA-Z]*")
+    @field:Size(min = 1, max = 30)
     @Schema(example = "George", required = true, description = "The first name of the pet owner.")
-    @get:JsonProperty("firstName", required = true) val firstName: String,
+    @field:JsonProperty("firstName", required = true) val firstName: String,
 
-    @get:Pattern(regexp = "^[a-zA-Z]*$")
-    @get:Size(min = 1, max = 30)
+    @field:Pattern(regexp = "[a-zA-Z]*")
+    @field:Size(min = 1, max = 30)
     @Schema(example = "Franklin", required = true, description = "The last name of the pet owner.")
-    @get:JsonProperty("lastName", required = true) val lastName: String,
+    @field:JsonProperty("lastName", required = true) val lastName: String,
 
-    @get:Size(min = 1, max = 255)
+    @field:Size(min = 1, max = 255)
     @Schema(example = "110 W. Liberty St.", required = true, description = "The postal address of the pet owner.")
-    @get:JsonProperty("address", required = true) val address: String,
+    @field:JsonProperty("address", required = true) val address: String,
 
-    @get:Size(min = 1, max = 80)
+    @field:Size(min = 1, max = 80)
     @Schema(example = "Madison", required = true, description = "The city of the pet owner.")
-    @get:JsonProperty("city", required = true) val city: String,
+    @field:JsonProperty("city", required = true) val city: String,
 
-    @get:Pattern(regexp = "^[0-9]*$")
-    @get:Size(min = 1, max = 20)
+    @field:Pattern(regexp = "[0-9]*")
+    @field:Size(min = 1, max = 20)
     @Schema(example = "6085551023", required = true, description = "The telephone number of the pet owner.")
-    @get:JsonProperty("telephone", required = true) val telephone: String,
+    @field:JsonProperty("telephone", required = true) val telephone: String,
 
     @field:Valid
     @Schema(
@@ -51,8 +51,8 @@ data class OwnerDto(
     )
     @get:JsonProperty("pets", required = true) val pets: List<PetDto>? = null,
 
-    @get:Min(0)
+    @field:Min(0)
     @Schema(example = "1", readOnly = true, description = "The ID of the pet owner.")
-    @get:JsonProperty("id") val id: Int? = null
+    @field:JsonProperty("id") val id: Int? = null
 )
 

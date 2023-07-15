@@ -18,12 +18,12 @@ import jakarta.validation.constraints.Size
 @JsonTypeName("OwnerFields")
 data class OwnerFieldsDto(
 
-    @get:Pattern(regexp = "^[a-zA-Z]*$")
+    @get:Pattern(regexp = "[a-zA-Z]*")
     @get:Size(min = 1, max = 30)
     @Schema(example = "George", required = true, description = "The first name of the pet owner.")
     @get:JsonProperty("firstName", required = true) val firstName: String,
 
-    @get:Pattern(regexp = "^[a-zA-Z]*$")
+    @get:Pattern(regexp = "[a-zA-Z]*")
     @get:Size(min = 1, max = 30)
     @Schema(example = "Franklin", required = true, description = "The last name of the pet owner.")
     @get:JsonProperty("lastName", required = true) val lastName: String,
@@ -36,7 +36,7 @@ data class OwnerFieldsDto(
     @Schema(example = "Madison", required = true, description = "The city of the pet owner.")
     @get:JsonProperty("city", required = true) val city: String,
 
-    @get:Pattern(regexp = "^[0-9]*$")
+    @get:Pattern(regexp = "[0-9]*")
     @get:Size(min = 1, max = 20)
     @Schema(example = "6085551023", required = true, description = "The telephone number of the pet owner.")
     @get:JsonProperty("telephone", required = true) val telephone: String

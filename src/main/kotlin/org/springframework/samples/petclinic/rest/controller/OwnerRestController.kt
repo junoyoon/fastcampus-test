@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.util.UriComponentsBuilder
+import reactor.core.publisher.Mono
 
 /**
  * @author Vitaliy Fedoriv
@@ -57,6 +58,13 @@ class OwnerRestController(
                 owners
             ), HttpStatus.OK
         )
+    }
+
+    @PreAuthorize("hasRole(@roles.OWNER_ADMIN)")
+    override fun getOwnerByWebFlux(ownerId: Int): ResponseEntity<Mono<OwnerDto>> {
+        val owner: Owner = clinicService.findOwnerById(ownerId)
+            ?: return ResponseEntity(HttpStatus.NOT_FOUND)
+        return ResponseEntity(Mono.just(OwnerMapper.toOwnerDto(owner)), HttpStatus.OK)
     }
 
     @PreAuthorize("hasRole(@roles.OWNER_ADMIN)")
