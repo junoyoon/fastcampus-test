@@ -17,8 +17,9 @@ import org.springframework.samples.petclinic.rest.dto.OwnerDto
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.test.web.reactive.server.expectBody
+import org.springframework.transaction.annotation.Transactional
 
-
+@Transactional
 @WithMockUser(roles = ["OWNER_ADMIN"])
 @AutoConfigureMockMvc
 @SpringBootTest

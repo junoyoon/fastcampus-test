@@ -22,7 +22,9 @@ import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.get
 import org.springframework.test.web.servlet.post
+import org.springframework.transaction.annotation.Transactional
 
+@Transactional
 @WithMockUser(roles = ["OWNER_ADMIN"])
 @AutoConfigureMockMvc
 @SpringBootTest
