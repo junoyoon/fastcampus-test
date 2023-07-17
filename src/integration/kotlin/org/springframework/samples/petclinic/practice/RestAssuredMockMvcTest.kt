@@ -59,6 +59,12 @@ class RestAssuredMockMvcTest(
         )
     }
 
+    /**
+     * - testPostAndGet 메소드 완성
+     *    - FixtureMonkey 생성 객체를 copy 하여, lastName 을 hello 로 변경
+     *    - /api/owners POST 호출에 대한 검증 코드 작성
+     *    - /api/owners/$id GET api 를 호출하여 insert 한 대로 입력되었는지 검증|
+     */
     // mock mvc 는 트랜잭션 가능
     @Order(1) // 이게 먼저 수행되어야 함으로 순서 지정
     @Transactional
@@ -94,6 +100,11 @@ class RestAssuredMockMvcTest(
         }
     }
 
+    /**
+     * - testFindByLastNameHello  메소드 완성
+     *    - /api/owners?lastName=hello GET api 를 호출하여 검색 되는지 검증
+     *    - httpStatus  검증
+     */
     @Order(2)
     @Test
     fun testFindByLastNameHello() {

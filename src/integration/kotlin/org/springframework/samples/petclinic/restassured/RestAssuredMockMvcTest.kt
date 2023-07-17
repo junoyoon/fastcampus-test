@@ -1,6 +1,7 @@
 package org.springframework.samples.petclinic.restassured
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import io.kotest.data.headers
 import io.kotest.inspectors.forAll
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.collections.shouldNotHaveSize
@@ -70,11 +71,20 @@ class RestAssuredMockMvcTest(
     @Test
     fun testAll() {
         Given {
+            log().all()
             contentType(MediaType.APPLICATION_JSON)
+            // body(newOwner) post 의 경우 이런 식으로 데이터 주입
         } When {
+            headers("key", "value")
             get("/api/owners")
         } Then {
             status(HttpStatus.OK)
+            body("[0].firstName", equalTo("George"))
+            body("findAll { it.firstName == 'George' }.lastName",
+                everyItem(equalTo("Franklin")))
+            body("firstName", everyItem(not(nullValue())))
+            body("firstName.size()", greaterThan(0))
+            // dto 로 역직렬화 하여 검증. extractBodyAs 는 직접 정의한 extension method
             extractBodyAs<List<OwnerDto>>().should {
                 it shouldNotHaveSize 0
                 it.forAll { owner ->
@@ -82,7 +92,6 @@ class RestAssuredMockMvcTest(
                     owner.pets shouldNotBe  null
                 }
             }
-            log().all()
         }
     }
 
