@@ -63,15 +63,16 @@ class RestAssuredMockMvcTest(
      * - testPostAndGet 메소드 완성
      *    - FixtureMonkey 생성 객체를 copy 하여, lastName 을 hello 로 변경
      *    - /api/owners POST 호출에 대한 검증 코드 작성
-     *    - /api/owners/$id GET api 를 호출하여 insert 한 대로 입력되었는지 검증|
+     *    - /api/owners/$id GET api 를 호출하여 insert 한 대로 입력되었는지 검증
      */
     // mock mvc 는 트랜잭션 가능
     @Order(1) // 이게 먼저 수행되어야 함으로 순서 지정
     @Transactional
     @Test
     fun testPostAndGet() {
-        // lastName이 이 hello 인 사용자 생성
+        // lastName 이 이 hello 인 사용자 생성
         val newOwner = Fixtures.giveMeOneFreshOwner()
+            .copy(lastName = "hello")
         var id : Int = 0
         Given {
             body(newOwner)
@@ -82,6 +83,9 @@ class RestAssuredMockMvcTest(
             status(HttpStatus.CREATED)
             extractBodyAs<OwnerDto>().should { dto ->
                 id = dto.id!!
+                dto.firstName shouldBe newOwner.firstName
+                dto.lastName shouldBe newOwner.lastName
+
                 // ...
             }
         }
@@ -96,7 +100,17 @@ class RestAssuredMockMvcTest(
             status(HttpStatus.OK)
             extractBodyAs<OwnerDto>().should { dto ->
                 dto.lastName shouldBe newOwner.lastName
+                dto.firstName shouldBe newOwner.firstName
             }
+        }
+
+        val lastName = "hello"
+        Given {
+            log().all()
+        } When {
+            get("/api/owners?lastName=$lastName")
+        } Then {
+            status(HttpStatus.OK)
         }
     }
 
@@ -115,7 +129,7 @@ class RestAssuredMockMvcTest(
         } When {
             get("/api/owners?lastName=$lastName")
         } Then {
-
+            status(HttpStatus.NOT_FOUND)
         }
     }
 }

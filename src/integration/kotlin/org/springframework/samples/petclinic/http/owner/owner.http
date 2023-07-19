@@ -1,0 +1,120 @@
+# @name owner 생성 테스트
+< {%
+    // pre-request handler
+    client.log(`${request.environment.get("hostname")} 로 테스트 합니다.`)
+    client.global.set("lastName", "James")
+%}
+
+// 커멘트
+POST http://{{hostname}}/api/owners
+Authorization: Basic {{username}} {{password}}
+Content-Type: application/json
+Accept: application/json
+
+< input.json
+
+> {%
+    // response handler
+    let body = response.body
+    // tests
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 201, "Response status is not 201")
+        client.assert(body.id !== undefined)
+        client.assert(body.lastName ===  client.global.get("lastName"))
+    });
+    client.global.set("ownerId", response.body.id)
+%}
+
+### 생성된 owner_id 로 owner 업데이트 테스트
+< {%
+client.global.set("firstName", "Hello")
+%}
+
+PUT http://{{hostname}}/api/owners/{{ownerId}}
+Authorization: Basic {{username}} {{password}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "firstName": "{{firstName}}",
+  "lastName": "{{lastName}}",
+  "address": "{{$random.alphabetic(20)}}",
+  "city": "test0b5a6f02b6ed",
+  "telephone": "19191919"
+}
+
+
+> {%
+    // response handler
+    let body = response.body
+    // tests
+    client.test(`user ${client.global.get("ownerId")} is modified`, function() {
+        client.assert(response.status === 204, "Response status is not 204")
+    });
+%}
+
+### 생성된 owner_id 로 조회 테스트
+GET http://{{hostname}}/api/owners/{{ownerId}}
+Authorization: Basic {{username}} {{password}}
+Content-Type: application/json
+Accept: application/json
+
+> {%
+    // response handler
+    let body = response.body
+    client.log(body.firstName)
+    // tests
+    client.test(`firstName should be ${client.global.get("first_name")}`, function() {
+        client.assert(response.status === 200, "Response status is not 200")
+        client.assert(body.firstName === client.global.get("firstName"), "firstName should be valid")
+    });
+%}
+
+### lastName 으로 검색 테스트
+http://{{hostname}}/api/owners?lastName={{lastName}}
+Authorization: Basic {{username}} {{password}}
+Content-Type: application/json
+Accept: application/json
+
+> {%
+    // response handler
+    let body = response.body
+    // tests
+    client.test(`lastName(${client.global.get("lastName")})search should be valid`, function() {
+        client.assert(response.status === 200, "Response status is not 200")
+        client.assert(body.length !== 0, "should be more than 2")
+        body.forEach(function(each) {
+            client.assert(each.lastName == client.global.get("lastName"), "all element should have same last name")
+        })
+    })
+%}
+
+### 삭제
+DELETE http://{{hostname}}/api/owners/{{ownerId}}
+Authorization: Basic {{username}} {{password}}
+Content-Type: application/json
+Accept: application/json
+
+> {%
+    // response handler
+    let body = response.body
+    // tests
+    client.test(`owner (${client.global.get("owner_id")}) should be deleted`, function() {
+        client.assert(response.status === 204, "Response status is not 204")
+    })
+%}
+
+### lastName 으로 검색 테스트
+GET http://{{hostname}}/api/owners?lastName={{lastName}}
+Authorization: Basic {{username}} {{password}}
+Content-Type: application/json
+Accept: application/json
+
+> {%
+    // response handler
+    let body = response.body
+    // tests
+    client.test(`lastName(${client.global.get("lastName")}) should return empty`, function() {
+        client.assert(response.status === 404, "Response status is not 404")
+    })
+%}

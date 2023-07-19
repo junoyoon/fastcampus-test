@@ -1,0 +1,28 @@
+# @name owner 생성 테스트
+
+POST http://{{hostname}}/api/owners
+
+> {%
+    // tests
+    client.test("Request executed successfully", function() {
+        //
+    });
+%}
+
+### 생성된 owner_id 로 조회 테스트
+GET http://{{hostname}}/api/owners/{{ownerId}}
+
+> {%
+%}
+
+### lastName 으로 검색 테스트
+GET http://{{hostname}}/api/owners?lastName={{lastName}}
+
+> {%
+%}
+
+### 삭제
+DELETE http://{{hostname}}/api/owners/{{ownerId}}
+
+> {%
+%}

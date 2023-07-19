@@ -1,5 +1,6 @@
 package org.springframework.samples.petclinic.mapper
 
+import org.springframework.samples.petclinic.model.Pet
 import org.springframework.samples.petclinic.model.Visit
 import org.springframework.samples.petclinic.rest.dto.VisitDto
 import org.springframework.samples.petclinic.rest.dto.VisitFieldsDto
@@ -13,7 +14,8 @@ object VisitMapper {
         return Visit(
             id = visitDto.id,
             description = visitDto.description,
-            date = visitDto.date ?: LocalDate.now()
+            date = visitDto.date ?: LocalDate.now(),
+            pet = Pet(visitDto.id)
         )
     }
 
