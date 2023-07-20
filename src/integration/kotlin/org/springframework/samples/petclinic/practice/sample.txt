@@ -1,0 +1,6 @@
+./ijhttp \
+--env-file /Users/rentalhub/practice/fastcampus-test/src/integration/resources/http-client.env.json \
+--private-env-file /Users/rentalhub/practice/fastcampus-test/src/integration/resources/http-client.private.env.json \
+--env=local \
+--report \
+/Users/rentalhub/practice/fastcampus-test/src/integration/kotlin/org/springframework/samples/petclinic/practice/owner.http

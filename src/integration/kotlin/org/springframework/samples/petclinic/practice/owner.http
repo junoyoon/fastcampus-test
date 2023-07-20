@@ -1,28 +1,73 @@
 # @name owner 생성 테스트
 
+< {%
+    client.global.set("lastName", "James")
+%}
+
 POST http://{{hostname}}/api/owners
+Authorization: Basic {{username}} {{password}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "firstName": "{{$random.alphabetic(10)}}",
+  "lastName": "{{lastName}}",
+  "address": "test b3575ed804ff",
+  "city": "test 48c4175509fd",
+  "telephone": "1234"
+}
 
 > {%
     // tests
     client.test("Request executed successfully", function() {
-        //
+        client.assert(response.status === 201, "response should be 201")
+        client.assert(response.body.id !== undefined, "id should be undefined")
     });
+    client.global.set("ownerId", response.body.id)
 %}
 
 ### 생성된 owner_id 로 조회 테스트
 GET http://{{hostname}}/api/owners/{{ownerId}}
+Authorization: Basic {{username}} {{password}}
+Content-Type: application/json
+Accept: application/json
 
 > {%
+    let body = response.body
+    let ownerId = client.global.get("ownerId")
+    client.test(`owner ${ownerId} should exist`, function() {
+        client.assert(response.status === 200, "response should be 200")
+        client.assert(body.id === parseInt(ownerId) , "id should be good")
+        client.assert(body.lastName === client.global.get("lastName"), "lastName should be valid")
+    });
 %}
 
-### lastName 으로 검색 테스트
+#### lastName 으로 검색 테스트
 GET http://{{hostname}}/api/owners?lastName={{lastName}}
+Authorization: Basic {{username}} {{password}}
+Content-Type: application/json
+Accept: application/json
 
 > {%
+    let body = response.body
+    let lastName = client.global.get("lastName")
+    client.test(`all owners should have  ${lastName}`, function() {
+        client.assert(response.status === 200, "response should be 200")
+        body.forEach(function(each) {
+            client.assert(each.lastName === lastName , `lastName should be ${lastName}`)
+        })
+    });
 %}
 
 ### 삭제
 DELETE http://{{hostname}}/api/owners/{{ownerId}}
+Authorization: Basic {{username}} {{password}}
+Content-Type: application/json
+Accept: application/json
 
 > {%
+    let ownerId = client.global.get("ownerId")
+    client.test(`owner ${ownerId} should be well deleted`, function() {
+        client.assert(response.status === 204, "response should be 204")
+    })
 %}
