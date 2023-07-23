@@ -54,7 +54,9 @@ dependencies {
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2")
     implementation("org.glassfish.jaxb:jaxb-runtime")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
+    implementation("io.github.oshai:kotlin-logging-jvm:5.0.0-beta-04")
 
+    testImplementation("com.tngtech.archunit:archunit-junit5:1.0.1")
     testImplementation("com.marcinziolo:kotlin-wiremock:2.0.2")
     testImplementation("com.navercorp.fixturemonkey:fixture-monkey:0.5.9")
     testImplementation("com.navercorp.fixturemonkey:fixture-monkey-kotlin:0.5.9")

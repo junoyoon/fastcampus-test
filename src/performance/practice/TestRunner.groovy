@@ -13,7 +13,7 @@ import org.junit.runner.RunWith
 
 import org.ngrinder.http.*
 import org.ngrinder.http.cookie.*
-
+/*
 @RunWith(GrinderRunner)
 class TestRunner {
     static GTest test1, test2
@@ -73,3 +73,4 @@ class TestRunner {
 //        assertThat(jsonBody.id, notNullValue())
     }
 }
+*/
