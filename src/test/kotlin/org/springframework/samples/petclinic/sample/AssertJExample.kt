@@ -4,10 +4,9 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.assertj.core.api.ObjectAssert
 import org.assertj.core.data.Percentage.withPercentage
-import org.junit.jupiter.api.*
+import org.junit.jupiter.api.Test
 import org.springframework.samples.petclinic.sample.AssertJExample.Person.Name
 import org.springframework.samples.petclinic.sample.AssertJExample.Person.Sex
-import java.lang.RuntimeException
 
 
 @Suppress("UNUSED_VARIABLE")

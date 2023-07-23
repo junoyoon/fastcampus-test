@@ -1,10 +1,7 @@
 package org.springframework.samples.petclinic.sample
 
 import io.kotest.core.NamedTag
-import io.kotest.core.Tag
-import io.kotest.core.annotation.Ignored
 import io.kotest.core.annotation.Tags
-import io.kotest.core.config.Defaults.blockingTest
 import io.kotest.core.spec.IsolationMode
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.data.forAll

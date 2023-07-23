@@ -9,7 +9,6 @@ import org.springframework.samples.petclinic.mapper.UserMapper
 import org.springframework.samples.petclinic.model.User
 import org.springframework.samples.petclinic.rest.advice.ExceptionControllerAdvice
 import org.springframework.security.test.context.support.WithMockUser
-import org.springframework.test.web.servlet.post
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.setup.MockMvcBuilders

@@ -5,14 +5,10 @@ import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
-import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.boot.test.mock.mockito.SpyBean
-import org.springframework.samples.petclinic.model.Owner
 import org.springframework.samples.petclinic.rest.controller.OwnerRestController
 import org.springframework.samples.petclinic.service.ClinicService
 import org.springframework.security.test.context.support.WithMockUser

@@ -29,7 +29,6 @@ import org.springframework.http.MediaType
 import org.springframework.samples.petclinic.SpringFunSpec
 import org.springframework.samples.petclinic.mapper.PetMapper
 import org.springframework.samples.petclinic.rest.advice.ExceptionControllerAdvice
-import org.springframework.samples.petclinic.rest.controller.PetRestController
 import org.springframework.samples.petclinic.rest.dto.PetDto
 import org.springframework.samples.petclinic.rest.dto.PetTypeDto
 import org.springframework.samples.petclinic.service.ClinicService

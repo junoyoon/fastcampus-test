@@ -1,27 +1,21 @@
 package org.springframework.samples.petclinic.practice
 
-import io.kotest.inspectors.forAll
 import io.kotest.matchers.collections.shouldNotHaveSize
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
-import org.mockito.kotlin.doNothing
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
-import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.HttpStatus
-import org.springframework.http.HttpStatusCode
 import org.springframework.samples.petclinic.model.Owner
 import org.springframework.samples.petclinic.rest.controller.OwnerRestController
 import org.springframework.samples.petclinic.service.ClinicService
-import org.springframework.security.test.context.support.WithMockUser
 
 
 // FIXME: WebMvcTest 도 제거

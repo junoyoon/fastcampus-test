@@ -3,18 +3,8 @@ package org.springframework.samples.petclinic.practice
 import com.tngtech.archunit.core.domain.JavaClasses
 import com.tngtech.archunit.core.importer.ImportOption
 import com.tngtech.archunit.junit.AnalyzeClasses
-import com.tngtech.archunit.junit.ArchIgnore
 import com.tngtech.archunit.junit.ArchTest
-import io.kotest.assertions.assertSoftly
-import io.kotest.assertions.withClue
-import io.kotest.matchers.optional.shouldNotBeEmpty
-import io.swagger.v3.oas.annotations.Operation
-import jakarta.validation.Valid
 import org.junit.jupiter.api.TestInstance
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestMethod
-import org.springframework.web.bind.annotation.RestController
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @AnalyzeClasses(

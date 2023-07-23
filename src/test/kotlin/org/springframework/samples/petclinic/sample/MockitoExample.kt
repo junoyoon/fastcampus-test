@@ -2,14 +2,10 @@ package org.springframework.samples.petclinic.sample
 
 import io.kotest.assertions.assertSoftly
 import io.kotest.assertions.throwables.shouldThrow
-import io.kotest.matchers.ints.shouldBeLessThan
 import io.kotest.matchers.shouldBe
-import org.junit.jupiter.api.*
-import org.mockito.ArgumentMatchers
-import org.mockito.ArgumentMatchers.anyInt
+import org.junit.jupiter.api.Test
 import org.mockito.Mockito
 import org.mockito.kotlin.*
-import java.lang.RuntimeException
 
 
 class MockitoExample {

@@ -1,6 +1,5 @@
 package org.springframework.samples.petclinic.sample
 
-import io.kotest.matchers.collections.shouldHaveAtLeastSize
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.should

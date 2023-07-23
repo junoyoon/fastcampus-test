@@ -9,8 +9,6 @@ import com.tngtech.archunit.junit.ArchIgnore
 import com.tngtech.archunit.junit.ArchTest
 import com.tngtech.archunit.lang.ArchRule
 import com.tngtech.archunit.library.GeneralCodingRules
-import org.junit.jupiter.api.DisplayName
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 
 @ArchIgnore(reason = "테스트 할때 제거")

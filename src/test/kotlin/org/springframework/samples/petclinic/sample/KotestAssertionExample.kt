@@ -2,25 +2,20 @@ package org.springframework.samples.petclinic.sample
 
 import io.kotest.assertions.assertSoftly
 import io.kotest.assertions.throwables.shouldThrow
-import io.kotest.assertions.withClue
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.inspectors.forAll
 import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.collections.shouldNotBeEmpty
 import io.kotest.matchers.collections.shouldNotContain
-import io.kotest.matchers.doubles.percent
 import io.kotest.matchers.equality.FieldsEqualityCheckConfig
 import io.kotest.matchers.equality.shouldBeEqualToComparingFields
-import io.kotest.matchers.equality.shouldBeEqualToIgnoringFields
-import io.kotest.matchers.equality.shouldBeEqualToUsingFields
 import io.kotest.matchers.floats.plusOrMinus
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
-import io.kotest.matchers.string.shouldContainOnlyDigits
 import io.kotest.matchers.string.shouldStartWith
-import org.springframework.samples.petclinic.sample.Person.*
-import java.lang.RuntimeException
+import org.springframework.samples.petclinic.sample.Person.Name
+import org.springframework.samples.petclinic.sample.Person.Sex
 
 class Calculator {
     fun plus(a: Int, b: Int) = a + b
