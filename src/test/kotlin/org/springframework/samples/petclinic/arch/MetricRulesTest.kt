@@ -15,7 +15,7 @@ import com.tngtech.archunit.library.metrics.MetricsComponents.fromClasses
     // 테스트 코드를 제외하고 싶다면 추가
     importOptions = [ImportOption.DoNotIncludeTests::class]
 )
-class MetricRules {
+class MetricRulesTest {
 
     @ArchTest
     fun metrics(javaClasses: JavaClasses) {

@@ -21,7 +21,7 @@ import org.junit.jupiter.api.TestInstance
     packages = ["org.springframework.samples.petclinic.rest.dto"],
     importOptions = [ImportOption.DoNotIncludeTests::class]
 )
-class DtoSwaggerRule {
+class DtoSwaggerRulesTest {
 
     @ArchTest
     fun shouldHaveSchemaAnnotationOnDto(javaClasses: JavaClasses) {
